@@ -72,8 +72,89 @@ uvicorn app.main:app --reload --port 8000 --app-dir backend
 
 ---
 
+## Phase 1 — Frontend Dashboard (in progress, P2)
+
+React + Vite frontend on `localhost:5173` consuming Supabase directly.
+
+### Structure
+```
+frontend/
+  src/
+    main.jsx                         # App entry
+    index.css                        # Tailwind v4 imports + custom scrollbar
+    App.jsx                          # Router + Sidebar + all 7 routes
+    lib/
+      supabase.js                    # Supabase client (reads VITE_ env vars)
+      utils.js                       # Score colors, formatters, helpers
+    hooks/
+      useDashboard.js                # Fetches employees from Supabase, computes all scores client-side
+    components/
+      layout/
+        Sidebar.jsx                  # Dark nav sidebar with 7 routes
+      dashboard/
+        ScoreGauge.jsx               # Gauge component (not yet plugged in — causes crash)
+        SummaryCard.jsx              # Animated stat cards (not yet plugged in)
+        FlaggedBadge.jsx             # Flagged count with progress bar (not yet plugged in)
+        CostComparison.jsx           # Fix vs Risk with Nivo chart (not yet plugged in)
+        DepartmentTable.jsx          # Department scores table (not yet plugged in)
+    pages/
+      Dashboard.jsx                  # ✅ Screen 1 — fully working with inline styles
+      Heatmap.jsx                    # 🚧 Placeholder
+      GapDetail.jsx                  # 🚧 Placeholder
+      Leaderboard.jsx                # 🚧 Placeholder
+      Simulator.jsx                  # 🚧 Placeholder
+      Compression.jsx                # 🚧 Placeholder
+      EmployeeView.jsx               # 🚧 Placeholder
+  public/
+    employees.json                   # Local fallback copy of dataset
+  .env (in repo root)               # VITE_SUPABASE_URL + VITE_SUPABASE_KEY
+```
+
+### Key decisions
+- **No Python backend dependency for frontend.** All scoring, gap detection, and cost calculations run client-side in `useDashboard.js`. Frontend fetches raw employee rows from Supabase and computes everything in the browser.
+- **Supabase-first with local fallback.** Hook tries Supabase, falls back to `/employees.json` if unavailable. Currently running Supabase only (local fallback removed).
+- **Inline styles for now.** Tailwind v4 classes + Framer Motion + react-gauge-component cause white-screen crash. Dashboard is fully functional using inline styles. Will investigate Tailwind issue and migrate back once stable.
+
+### What's working (Screen 1 — Dashboard)
+- ✅ Equity score (0–100) with semicircle gauge (inline CSS)
+- ✅ 4 summary cards: gender gap %, tenure gap %, role gap %, performance alignment %
+- ✅ Flagged employees count with percentage + progress bar
+- ✅ Fix cost vs. risk cost comparison with visual bar
+- ✅ Department scores table with score badges, flagged counts, gender gap %, trend arrows, hover states
+- ✅ Footer stats bar: total payroll, avg salary, locations, departments
+- ✅ Sidebar navigation with active state highlighting
+- ✅ Loading and error states
+
+### What's NOT working yet
+- ❌ Tailwind utility classes (white screen — needs investigation)
+- ❌ Framer Motion animations (crashes app)
+- ❌ react-gauge-component (crashes app)
+- ❌ Nivo charts in CostComparison (crashes app)
+- ❌ CountUp animated numbers
+
+### Installed modules (all in `frontend/package.json`)
+`react`, `react-router-dom`, `@supabase/supabase-js`, `tailwindcss v4`, `@tailwindcss/vite`, `framer-motion`, `react-countup`, `react-gauge-component`, `@nivo/core`, `@nivo/bar`, `@nivo/line`, `@nivo/heatmap`, `@nivo/scatterplot`, `@nivo/radar`, `@nivo/waffle`, `lucide-react`, `sonner`, `clsx`, `tailwind-merge`, `class-variance-authority`
+
+### Run command
+```
+cd frontend && npm run dev
+```
+Opens at http://localhost:5173
+
+### Engine logic in frontend (useDashboard.js)
+All scoring runs client-side — no backend API needed:
+- `computeGenderGap()` — compares avg salary M vs F
+- `computeTenureGap()` — compares >3yr vs ≤3yr employees
+- `computeRoleGap()` — variance within same role+level+location groups
+- `computePerformanceAlignment()` — checks if higher performers earn more
+- `computeEquityScore()` — weighted composite: gender 30%, tenure 25%, role 25%, perf 20%
+- `detectGaps()` — flags pairs with >10% gap, calculates fix cost + risk cost per gap
+- `computeDepartmentScores()` — runs all the above per department
+
+---
+
 ## Next up
 
-- **P3:** Replace engine stubs with real gap detection + scoring math.
+- **P2:** Investigate Tailwind/Framer Motion crash and migrate inline styles back to utility classes. Then build Phase 2 screens (Gap Detail + Leaderboard).
+- **P3:** Replace backend engine stubs with real gap detection + scoring math.
 - **P1 Phase 2:** `/api/gaps`, `/api/gaps/{id}`, `/api/departments`, `/api/simulator`, `/api/employee/{id}`, `/api/trends`.
-- **P2:** React frontend on `localhost:3000` consuming these endpoints.
