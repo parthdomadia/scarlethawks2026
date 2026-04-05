@@ -6,15 +6,14 @@ const navItems = [
   { to: '/gaps', label: 'Gap Analysis', icon: '⚖️' },
   { to: '/leaderboard', label: 'Leaderboard', icon: '🏆' },
   { to: '/simulator', label: 'What-If', icon: '🎛️' },
-  { to: '/compression', label: 'Compression', icon: '📉' },
-  { to: '/employee', label: 'Employee View', icon: '👤' },
 ]
 
 export default function Sidebar() {
   return (
     <aside style={{
-      width: '250px', minHeight: '100vh', background: '#0f172a', color: 'white',
+      width: '250px', height: '100vh', background: '#0f172a', color: 'white',
       display: 'flex', flexDirection: 'column', flexShrink: 0,
+      position: 'sticky', top: 0, alignSelf: 'flex-start',
     }}>
       {/* Logo */}
       <div style={{ padding: '20px 24px', borderBottom: '1px solid #1e293b' }}>

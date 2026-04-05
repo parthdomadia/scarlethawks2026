@@ -10,13 +10,6 @@ const CATEGORY_META = {
   performance_misalignment: { label: 'Performance', color: '#3b82f6', bg: '#eff6ff' },
 }
 
-const DEMOGRAPHICS = [
-  { key: 'all', label: 'All' },
-  { key: 'F',   label: 'Female' },
-  { key: 'M',   label: 'Male' },
-  { key: 'NB',  label: 'Non-binary' },
-]
-
 const fmtMoney = n => `$${Math.round(n || 0).toLocaleString()}`
 
 function scoreColor(s) {
@@ -50,7 +43,6 @@ export default function Simulator() {
   const { data: dash } = useDashboard()
   const [budget, setBudget] = useState(50000)
   const [dept, setDept] = useState('all')
-  const [demo, setDemo] = useState('all')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -70,7 +62,7 @@ export default function Simulator() {
       fetch(`${API_BASE}/api/simulator`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ budget, department: dept, demographic: demo }),
+        body: JSON.stringify({ budget, department: dept }),
       })
         .then(r => { if (!r.ok) throw new Error(`/api/simulator ${r.status}`); return r.json() })
         .then(setResult)
@@ -78,7 +70,7 @@ export default function Simulator() {
         .finally(() => setLoading(false))
     }, 300)
     return () => debounceRef.current && clearTimeout(debounceRef.current)
-  }, [budget, dept, demo])
+  }, [budget, dept])
 
   const before = result?.before_score_precise ?? result?.before_score ?? 0
   const after = result?.after_score_precise ?? result?.after_score ?? 0
@@ -135,25 +127,6 @@ export default function Simulator() {
               <option value="all">All</option>
               {departments.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
-          </div>
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            <label style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginRight: '4px' }}>
-              Demographic
-            </label>
-            {DEMOGRAPHICS.map(d => (
-              <button
-                key={d.key}
-                onClick={() => setDemo(d.key)}
-                style={{
-                  padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                  border: `1px solid ${demo === d.key ? '#3b82f6' : '#cbd5e1'}`,
-                  background: demo === d.key ? '#3b82f6' : 'white',
-                  color: demo === d.key ? 'white' : '#475569',
-                }}
-              >
-                {d.label}
-              </button>
-            ))}
           </div>
           {loading && <span style={{ fontSize: '12px', color: '#94a3b8' }}>Simulating…</span>}
           {error && <span style={{ fontSize: '12px', color: '#ef4444' }}>{error}</span>}
