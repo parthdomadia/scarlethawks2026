@@ -27,13 +27,24 @@ def _fetch_all_employees():
 @router.get("/dashboard")
 def dashboard():
     employees = _fetch_all_employees()
-    gaps = detection.detect_gaps(employees)
-    return {
-        "company_score": scoring.calculate_company_score(employees),
-        "total_employees": len(employees),
-        "flagged_gaps": len(gaps),
-        "estimated_fix_cost": 47200,
-        "estimated_risk_cost": 2100000,
-        "summary": scoring.calculate_summary(employees),
-        "department_scores": scoring.calculate_department_scores(employees),
-    }
+    flagged = detection.detect_flagged_employees(employees)
+
+    # Rough cost estimates per flagged employee (salary-proportional).
+    # TODO: replace with engine-provided fix_cost/risk_cost when available.
+    fix_cost = sum(int(f.get("salary", 0) * 0.05) for f in flagged)
+    risk_cost = sum(int(f.get("salary", 0) * 0.35) for f in flagged)
+
+    # Build dept flagged counts
+    dept_flagged = {}
+    for f in flagged:
+        d = f.get("department", "")
+        dept_flagged[d] = dept_flagged.get(d, 0) + 1
+
+    report = scoring.calculate_company_score(employees)
+    report["flagged_gaps"] = len(flagged)
+    report["estimated_fix_cost"] = fix_cost
+    report["estimated_risk_cost"] = risk_cost
+    for d in report.get("department_scores", []):
+        d["flagged"] = dept_flagged.get(d["name"], 0)
+
+    return report

@@ -13,7 +13,7 @@ export default function App() {
     <BrowserRouter>
       <div style={{ display: 'flex', minHeight: '100vh' }}>
         <Sidebar />
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#eef2f7' }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/heatmap" element={<Heatmap />} />

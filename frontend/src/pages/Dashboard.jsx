@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useDashboard } from '../hooks/useDashboard'
 
 export default function Dashboard() {
@@ -68,7 +69,12 @@ export default function Dashboard() {
       {/* Middle row: Flagged + Cost */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
         {/* Flagged Badge */}
-        <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+        <Link to="/gaps" style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%' }}>
+        <div
+          style={{ background: 'white', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', cursor: 'pointer', transition: 'transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease', height: '100%', boxSizing: 'border-box' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#fecaca'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.06)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)' }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
             <span style={{ fontSize: '16px' }}>&#9888;</span>
             <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Flagged Pay Gaps</span>
@@ -93,6 +99,7 @@ export default function Dashboard() {
             }} />
           </div>
         </div>
+        </Link>
 
         {/* Cost Comparison */}
         <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '22px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>

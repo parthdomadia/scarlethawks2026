@@ -158,3 +158,75 @@ All scoring runs client-side — no backend API needed:
 - **P2:** Investigate Tailwind/Framer Motion crash and migrate inline styles back to utility classes. Then build Phase 2 screens (Gap Detail + Leaderboard).
 - **P3:** Replace backend engine stubs with real gap detection + scoring math.
 - **P1 Phase 2:** `/api/gaps`, `/api/gaps/{id}`, `/api/departments`, `/api/simulator`, `/api/employee/{id}`, `/api/trends`.
+
+---
+
+## Phase 2 — Engine wired to backend + Frontend on API (complete)
+
+Backend now uses the real P3 engine (root `engine/`) instead of the stubs, and the React dashboard pulls all numbers from the FastAPI backend instead of computing them client-side from Supabase. Single source of truth = the engine.
+
+### What changed
+- **Deleted `backend/engine/`** (stub folder). Root `engine/` is the only engine now.
+- **`backend/app/main.py`** — prepends repo root to `sys.path` so `from engine import ...` resolves to `<repo>/engine/`. CORS expanded to `localhost:3000`, `5173`, `8000`.
+- **`backend/app/db.py`** — falls back to `VITE_SUPABASE_URL` / `VITE_SUPABASE_KEY` (matches the frontend `.env` naming).
+- **`backend/app/routers/dashboard.py`** — calls `detection.detect_flagged_employees(employees)` + `scoring.calculate_company_score(employees)` from the real engine. Adds placeholder cost estimates (`fix = 5% × salary`, `risk = 35% × salary` per flagged employee) and merges per-dept flagged counts into `department_scores`.
+- **`frontend/src/hooks/useDashboard.js`** — rewritten. Fetches `GET /api/dashboard` + `GET /api/employees?limit=1000` from `http://localhost:8000` in parallel (no more direct Supabase). Enriches `department_scores` with client-side `gender_gap` / `tenure_gap` (backend doesn't expose those yet). Exposes raw employees list for footer stats.
+
+### Data regenerated
+- **`scripts/regenerate_employees.py`** — new script. Generates 1000 employees per `data_blueprint.md` (dept sizes, gender mix, level salary bands, location multipliers, perf buckets) with intentional gaps baked in (gender gap Engineering, tenure compression Marketing, role inversion Sales, perf misalignment Support). Wipes the Supabase `employees` table and re-uploads in batches of 100. Also writes `data/employees.json`.
+- Run: `python scripts/regenerate_employees.py`
+
+### Current live numbers (1000 rows)
+- company_score: **69**
+- flagged (unique employees): **26**
+- estimated_fix_cost: **~$99K**
+- estimated_risk_cost: **~$693K**
+- departments (worst→best): Marketing 65, Support 66, Engineering 68, Finance 71, Sales 75
+
+### Run order
+1. Backend: `uvicorn app.main:app --reload --port 8000 --app-dir backend`
+2. Frontend: `cd frontend && npm run dev`
+3. Hard-refresh the browser
+
+---
+
+## Next up (updated)
+
+- **Engine:** expose real `fix_cost` / `risk_cost` per flagged employee (replace placeholders in `dashboard.py`). Optionally expose per-dept `gender_gap` / `tenure_gap` so the frontend can drop its client-side enrichment.
+- **P1 Phase 2 endpoints:** `/api/gaps/{id}`, `/api/departments`, `/api/simulator`, `/api/employee/{id}`, `/api/trends`.
+- **P2:** wire the remaining 5 screens (Heatmap, Leaderboard, Simulator, Compression, EmployeeView) — currently placeholder pages.
+- **Decision:** pairwise 10%-gap count (~2500) vs unique flagged-employee count (26) — pick whichever reads better for the demo.
+
+---
+
+## Phase 2 — Gap Analysis Drilldown (complete)
+
+Clickable Flagged widget on the Dashboard → `/gaps` list page, driven by a new `/api/gaps` endpoint.
+
+### Backend
+- **`backend/app/routers/gaps.py`** — implements `GET /api/gaps`. Fetches employees (paginated 1k chunks), calls `detection.detect_flagged_employees()`, enriches each row with `fix_cost = 5% × salary` and `risk_cost = 35% × salary`. Supports query params: `department`, `gap_type` (gender/tenure/role/performance), `limit`, `offset`. Returns `{count, results}`.
+- **`backend/app/main.py`** — mounts the `gaps` router; CORS expanded to include `localhost:8001` (port 8000 was held by zombie uvicorn sockets on Windows — switched to 8001 as a workaround).
+
+### Frontend
+- **`frontend/src/hooks/useGaps.js`** (new) — mirrors `useDashboard` pattern. Fetches `/api/gaps`, exposes `{data, loading, error}`.
+- **`frontend/src/pages/Dashboard.jsx`** — Flagged Pay Gaps widget wrapped in `<Link to="/gaps">` with hover lift (translateY + red border). Grid height equalised with the neighbouring Cost card.
+- **`frontend/src/pages/GapDetail.jsx`** — replaced placeholder with a real list view (inline styles, same pattern as Dashboard):
+  - Header + 5 summary cards (Total Flagged + counts per flag type).
+  - Filter bar: department dropdown + gap-type chips (All / Gender / Tenure / Role / Performance).
+  - Sortable table — click any column header (Employee, Dept·Role·Level, Salary, Flags, Priority, Fix/Risk) to sort; click again to toggle asc/desc. Arrow indicator shows active column.
+  - Flag badges (colored pills) per row.
+  - 6 equal-width columns with 32px column gap.
+- **`frontend/src/App.jsx`** — page background darkened from `#f8fafc` to `#eef2f7` for better widget contrast.
+- **Hooks now log requests/responses to the console** (temporary debug aid).
+
+### Priority scoring — updated
+`engine/detection.py:174-177` — replaced the old `flag_count * 25 + salary_factor` formula with one directly proportional to both flag count and risk cost:
+```python
+risk_cost = emp["salary"] * 0.35
+priority_score = round(flag_count * (risk_cost / 1000), 2)
+```
+Framing: "who costs us the most if we do nothing." High-earner + many flags bubble to the top.
+
+### Gotchas hit
+- Uvicorn `--reload` only watches the `backend/` dir by default — edits to `engine/` don't trigger a reload. Use `--reload-dir . --reload-dir ../engine` or restart manually.
+- On Windows, dead uvicorn processes can leave LISTENING sockets in a zombie state with dozens of CLOSE_WAIT connections, silently swallowing new requests. `taskkill` removes the process but not the socket until the half-open connections drain. Switching ports (8000 → 8001) is the fastest unstick.
