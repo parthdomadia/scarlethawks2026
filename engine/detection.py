@@ -19,9 +19,9 @@ from collections import defaultdict
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-GAP_THRESHOLD = 0.30
+GAP_THRESHOLD = 0.10
 GENDER_GAP_THRESHOLD = 0.23
-TENURE_VETERAN = 5.0
+TENURE_VETERAN = 3.0
 TENURE_NEW = 2.0
 
 TENURE_TOLERANCE = 3        # years

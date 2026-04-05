@@ -72,6 +72,35 @@ def gap_detail(employee_id: str):
     salary = details.get("salary") or 0
     details["fix_cost"] = round(salary * 0.05)
     details["risk_cost"] = round(salary * 0.35)
+
+    # Auto-persist to gap_comparisons — skip duplicates
+    import uuid
+    run_id = str(uuid.uuid4())
+    for cat in details.get("categories", []):
+        category = cat.get("category")
+        for peer in cat.get("comparison_individuals", []):
+            peer_id = peer.get("employee_id")
+            if not peer_id:
+                continue
+            existing = (
+                supabase.table("gap_comparisons")
+                .select("id", count="exact")
+                .eq("employee_id", employee_id)
+                .eq("peer_id", peer_id)
+                .eq("category", category)
+                .execute()
+            )
+            if existing.count and existing.count > 0:
+                continue
+            supabase.table("gap_comparisons").insert({
+                "run_id": run_id,
+                "employee_id": employee_id,
+                "peer_id": peer_id,
+                "category": category,
+                "gap_percent": cat.get("gap_percent"),
+                "reason": cat.get("reason"),
+            }).execute()
+
     return details
 
 
