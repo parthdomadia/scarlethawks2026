@@ -20,6 +20,7 @@ from collections import defaultdict
 # Constants
 # ---------------------------------------------------------------------------
 GAP_THRESHOLD = 0.30
+GENDER_GAP_THRESHOLD = 0.23
 TENURE_VETERAN = 5.0
 TENURE_NEW = 2.0
 
@@ -105,7 +106,7 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
             if comparable_males and e.get("gender") == "F":
                 avg_male = statistics.mean([m["salary"] for m in comparable_males])
 
-                if e["salary"] < avg_male * (1 - GAP_THRESHOLD):
+                if e["salary"] < avg_male * (1 - GENDER_GAP_THRESHOLD):
                     flagged[eid]["gender_gap"] = True
 
             # --------------------------------------------------
@@ -258,7 +259,7 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
         comparable_males = [m for m in males if is_comparable(target, m)]
         if comparable_males:
             avg_male = statistics.mean([m["salary"] for m in comparable_males])
-            if target["salary"] < avg_male * (1 - GAP_THRESHOLD):
+            if target["salary"] < avg_male * (1 - GENDER_GAP_THRESHOLD):
                 gap_pct = round((avg_male - target["salary"]) / avg_male * 100, 1)
                 categories.append({
                     "category": "gender_gap",
@@ -274,7 +275,7 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
                     ),
                     "metadata": {
                         "peer_count": len(comparable_males),
-                        "threshold_pct": GAP_THRESHOLD * 100,
+                        "threshold_pct": GENDER_GAP_THRESHOLD * 100,
                     },
                 })
 

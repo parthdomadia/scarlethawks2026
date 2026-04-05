@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useGaps } from '../hooks/useGaps'
+import EmployeeDetailDrawer from '../components/EmployeeDetailDrawer'
 
 const FLAG_META = {
   gender_gap:               { label: 'Gender',      bg: '#fef2f2', color: '#991b1b', border: '#fecaca' },
@@ -22,6 +23,8 @@ export default function GapDetail() {
   const [gapType, setGapType] = useState('all')
   const [sortKey, setSortKey] = useState('priority_score')
   const [sortDir, setSortDir] = useState('desc')
+  const [selectedId, setSelectedId] = useState(null)
+  const [hoverId, setHoverId] = useState(null)
 
   function toggleSort(key) {
     if (sortKey === key) {
@@ -160,10 +163,15 @@ export default function GapDetail() {
         {filtered.map(r => (
           <div
             key={r.employee_id}
+            onClick={() => setSelectedId(r.employee_id)}
+            onMouseEnter={() => setHoverId(r.employee_id)}
+            onMouseLeave={() => setHoverId(null)}
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(6, 1fr)', columnGap: '32px',
               alignItems: 'center', padding: '14px 22px', borderBottom: '1px solid #f8fafc',
+              cursor: 'pointer',
+              background: hoverId === r.employee_id ? '#f8fafc' : 'white',
             }}
           >
             <div>
@@ -202,6 +210,8 @@ export default function GapDetail() {
           </div>
         ))}
       </div>
+
+      <EmployeeDetailDrawer employeeId={selectedId} onClose={() => setSelectedId(null)} />
     </div>
   )
 }

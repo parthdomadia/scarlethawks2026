@@ -230,3 +230,49 @@ Framing: "who costs us the most if we do nothing." High-earner + many flags bubb
 ### Gotchas hit
 - Uvicorn `--reload` only watches the `backend/` dir by default — edits to `engine/` don't trigger a reload. Use `--reload-dir . --reload-dir ../engine` or restart manually.
 - On Windows, dead uvicorn processes can leave LISTENING sockets in a zombie state with dozens of CLOSE_WAIT connections, silently swallowing new requests. `taskkill` removes the process but not the socket until the half-open connections drain. Switching ports (8000 → 8001) is the fastest unstick.
+
+---
+
+## Phase 3 — Employee Gap-Explanation Drawer + Supabase Analysis Runs (complete)
+
+Click a row on `/gaps` → slide-in drawer shows **why** the employee was flagged with concrete numbers: their salary vs peer-group salary, gap %, comparison entity, and the actual peers contributing to the comparison. All analysis runs are now persisted to Supabase (no local JSON files).
+
+### Backend
+- **`backend/app/routers/gaps.py`** — two new endpoints:
+  - `GET /api/gaps/{employee_id}` — calls `detection.get_comparison_details(employee_id, employees)` (already existed at `engine/detection.py:210-373`), returns the full `categories[]` payload with `employee_salary`, `comparison_salary`, `comparison_entity`, `comparison_individuals[]`, `gap_percent`, `reason`, `metadata` per flag. Adds top-level `fix_cost` / `risk_cost` to match `/api/gaps` row shape. `HTTPException(404)` if employee not flagged.
+  - `POST /api/gaps/analyze` — runs detection across the full employee set and persists results to Supabase via `save_analysis_run()`. Returns `{run_id, rows_written}`.
+- **`engine/persistence.py`** (new) — `save_analysis_run(employees, supabase_client)`:
+  1. generates fresh `run_id` (uuid4)
+  2. calls `detect_flagged_employees()` then `get_comparison_details()` per flagged employee
+  3. flattens to one row per (employee, peer, category) triple
+  4. bulk-inserts into `gap_comparisons` in batches of 100
+
+### Database
+- **`scripts/create_analysis_tables.sql`** (new) — `CREATE TABLE gap_comparisons` with columns `id`, `run_id`, `created_at`, `employee_id` (FK→employees), `peer_id` (FK→employees), `category`, `gap_percent`, `reason`. Indexes on `employee_id`, `(run_id, category)`, `(employee_id, category)`. Unique constraint on `(run_id, employee_id, category, peer_id)`.
+- Denormalized shape: `gap_percent` + `reason` repeat across sibling rows (same employee+category, different peers). Single-table queries, all descriptive fields (name/salary/dept/etc.) join to `employees`.
+- Run once in Supabase SQL editor.
+
+### Frontend
+- **`frontend/src/hooks/useGapDetail.js`** (new) — `useGapDetail(employeeId)`. Fetches `/api/gaps/{id}` when id is truthy, resets on id change, cancel-safe. Mirrors `useGaps` pattern.
+- **`frontend/src/components/EmployeeDetailDrawer.jsx`** (new) — props `{ employeeId, onClose }`. Backdrop (rgba(15,23,42,0.45)) + 560px right panel with box-shadow, slide-in transition. Sticky header shows name, employee_id, dept·role·L{level}, salary/tenure/perf/gender. Body renders one color-coded card per entry in `data.categories`:
+  - red (gender) / orange (tenure) / yellow (role) / blue (performance) left border + bg tint
+  - gap % pill, side-by-side "This employee: $X" vs "{comparison_entity}: $Y"
+  - italic `reason` text
+  - peer table (name, salary, tenure, perf) — first 5 + "and N more…" expand
+  - Escape key, backdrop click, and × button all close
+- **`frontend/src/pages/GapDetail.jsx`** — rows now `cursor:pointer` with `#f8fafc` hover bg, `onClick={() => setSelectedId(r.employee_id)}`. Drawer rendered at bottom of page.
+
+### Script change: JSON files dropped
+- **`scripts/generate_analysis.py`** — rewritten. No longer writes `data/analysis/*.json`. Now just calls `save_analysis_run(employees, supabase)`. Each run creates a new `run_id` → history is preserved in `gap_comparisons`, diffable by run. Single source of truth for analysis output.
+- `data/analysis/` directory is safe to delete — nothing reads from it anymore.
+
+### Engine change reviewed (no flow breakage)
+- `engine/detection.py` — added `GENDER_GAP_THRESHOLD = 0.23` (stricter than the general `GAP_THRESHOLD = 0.30`). Used in both `detect_flagged_employees` and `get_comparison_details` for the gender-gap check only. Function signatures + return shapes unchanged → all consumers (routers, persistence, frontend hooks, drawer) work unmodified. Expect slightly more female employees to be flagged for `gender_gap` than before.
+- Fixed `metadata.threshold_pct` in the gender-gap category to report `GENDER_GAP_THRESHOLD * 100` (was stale at `GAP_THRESHOLD * 100`).
+
+### How to test
+1. Run `scripts/create_analysis_tables.sql` in Supabase (once).
+2. `python scripts/generate_analysis.py` → expect `Supabase: wrote N rows (run_id=...)`.
+3. `uvicorn app.main:app --reload --port 8001 --app-dir backend --reload-dir . --reload-dir ./engine`
+4. Hit `http://localhost:8001/api/gaps/{id}` with a flagged id from `/api/gaps`. Bogus id → 404.
+5. `cd frontend && npm run dev`, go to `/gaps`, click a row → drawer slides in from right. Esc / × / backdrop closes. Click another row → content swaps.

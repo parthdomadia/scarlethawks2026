@@ -1,0 +1,60 @@
+{
+  "employee_id": "E0933",
+  "name": "Sandra Lewis",
+  "department": "Finance",
+  "role": "Controller",
+  "level": "L5",
+  "salary": 109500,
+  "gender": "F",
+  "tenure_years": 1.2,
+  "performance_score": 1.8,
+  "flag_count": 2,
+  "categories": [
+    {
+      "category": "gender_gap",
+      "label": "Gender Gap",
+      "employee_salary": 109500,
+      "comparison_salary": 160000,
+      "comparison_entity": "Avg of 1 comparable male peer(s)",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0957",
+          "name": "Tyler Martinez",
+          "salary": 160000,
+          "gender": "M",
+          "tenure_years": 2.2,
+          "performance_score": 1.8
+        }
+      ],
+      "gap_percent": 31.6,
+      "reason": "Earns 31.6% less than comparable male peers in Controller L5 / Finance",
+      "metadata": {
+        "peer_count": 1,
+        "threshold_pct": 30
+      }
+    },
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 109500,
+      "comparison_salary": 160000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0957",
+          "name": "Tyler Martinez",
+          "salary": 160000,
+          "gender": "M",
+          "tenure_years": 2.2,
+          "performance_score": 1.8
+        }
+      ],
+      "gap_percent": 31.6,
+      "reason": "Earns 31.6% less than the highest-paid comparable peer in Controller L5 / Finance",
+      "metadata": {
+        "peer_count": 2,
+        "threshold_pct": 30
+      }
+    }
+  ]
+}

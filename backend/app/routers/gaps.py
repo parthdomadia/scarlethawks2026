@@ -1,9 +1,9 @@
 from typing import Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 
 from app.db import supabase
-from engine import detection
+from engine import detection, persistence
 
 router = APIRouter()
 
@@ -61,3 +61,21 @@ def gaps(
     sliced = flagged[offset : offset + limit] if limit is not None else flagged[offset:]
 
     return {"count": total, "results": sliced}
+
+
+@router.get("/gaps/{employee_id}")
+def gap_detail(employee_id: str):
+    employees = _fetch_all_employees()
+    details = detection.get_comparison_details(employee_id, employees)
+    if details is None:
+        raise HTTPException(status_code=404, detail="Employee not found or not flagged")
+    salary = details.get("salary") or 0
+    details["fix_cost"] = round(salary * 0.05)
+    details["risk_cost"] = round(salary * 0.35)
+    return details
+
+
+@router.post("/gaps/analyze")
+def analyze():
+    employees = _fetch_all_employees()
+    return persistence.save_analysis_run(employees, supabase)
