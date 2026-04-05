@@ -1,0 +1,60 @@
+{
+  "employee_id": "E0866",
+  "name": "Maria Harris",
+  "department": "Finance",
+  "role": "Controller",
+  "level": "L2",
+  "salary": 61500,
+  "gender": "F",
+  "tenure_years": 14.4,
+  "performance_score": 3.4,
+  "flag_count": 2,
+  "categories": [
+    {
+      "category": "gender_gap",
+      "label": "Gender Gap",
+      "employee_salary": 61500,
+      "comparison_salary": 88500,
+      "comparison_entity": "Avg of 1 comparable male peer(s)",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0885",
+          "name": "Jack Young",
+          "salary": 88500,
+          "gender": "M",
+          "tenure_years": 14.2,
+          "performance_score": 4.2
+        }
+      ],
+      "gap_percent": 30.5,
+      "reason": "Earns 30.5% less than comparable male peers in Controller L2 / Finance",
+      "metadata": {
+        "peer_count": 1,
+        "threshold_pct": 30.0
+      }
+    },
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 61500,
+      "comparison_salary": 88500,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0885",
+          "name": "Jack Young",
+          "salary": 88500,
+          "gender": "M",
+          "tenure_years": 14.2,
+          "performance_score": 4.2
+        }
+      ],
+      "gap_percent": 30.5,
+      "reason": "Earns 30.5% less than the highest-paid comparable peer in Controller L2 / Finance",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

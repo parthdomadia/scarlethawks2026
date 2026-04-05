@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0406",
+  "name": "Ashley Gonzalez",
+  "department": "Marketing",
+  "role": "Brand Manager",
+  "level": "L4",
+  "salary": 83000,
+  "gender": "F",
+  "tenure_years": 12.4,
+  "performance_score": 1.5,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 83000,
+      "comparison_salary": 124000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0350",
+          "name": "Brandon Martinez",
+          "salary": 124000,
+          "gender": "M",
+          "tenure_years": 11.2,
+          "performance_score": 2.5
+        }
+      ],
+      "gap_percent": 33.1,
+      "reason": "Earns 33.1% less than the highest-paid comparable peer in Brand Manager L4 / Marketing",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

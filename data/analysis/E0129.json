@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0129",
+  "name": "Andrew Baker",
+  "department": "Engineering",
+  "role": "QA Engineer",
+  "level": "L3",
+  "salary": 71000,
+  "gender": "M",
+  "tenure_years": 14.8,
+  "performance_score": 3.4,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 71000,
+      "comparison_salary": 106500,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0142",
+          "name": "Steven White",
+          "salary": 106500,
+          "gender": "M",
+          "tenure_years": 17.1,
+          "performance_score": 2.5
+        }
+      ],
+      "gap_percent": 33.3,
+      "reason": "Earns 33.3% less than the highest-paid comparable peer in QA Engineer L3 / Engineering",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

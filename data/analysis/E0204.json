@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0204",
+  "name": "Jeffrey Brown",
+  "department": "Engineering",
+  "role": "QA Engineer",
+  "level": "L4",
+  "salary": 94000,
+  "gender": "M",
+  "tenure_years": 5.5,
+  "performance_score": 3.5,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 94000,
+      "comparison_salary": 140000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0290",
+          "name": "Gary Perez",
+          "salary": 140000,
+          "gender": "M",
+          "tenure_years": 7.7,
+          "performance_score": 2.6
+        }
+      ],
+      "gap_percent": 32.9,
+      "reason": "Earns 32.9% less than the highest-paid comparable peer in QA Engineer L4 / Engineering",
+      "metadata": {
+        "peer_count": 2,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

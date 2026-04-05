@@ -1,0 +1,1064 @@
+[
+  {
+    "employee_id": "E0933",
+    "name": "Sandra Lewis",
+    "department": "Finance",
+    "role": "Controller",
+    "level": "L5",
+    "salary": 109500,
+    "gender": "F",
+    "tenure_years": 1.2,
+    "performance_score": 1.8,
+    "flag_count": 2,
+    "categories": [
+      {
+        "category": "gender_gap",
+        "label": "Gender Gap",
+        "employee_salary": 109500,
+        "comparison_salary": 160000,
+        "comparison_entity": "Avg of 1 comparable male peer(s)",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0957",
+            "name": "Tyler Martinez",
+            "salary": 160000,
+            "gender": "M",
+            "tenure_years": 2.2,
+            "performance_score": 1.8
+          }
+        ],
+        "gap_percent": 31.6,
+        "reason": "Earns 31.6% less than comparable male peers in Controller L5 / Finance",
+        "metadata": {
+          "peer_count": 1,
+          "threshold_pct": 30.0
+        }
+      },
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 109500,
+        "comparison_salary": 160000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0957",
+            "name": "Tyler Martinez",
+            "salary": 160000,
+            "gender": "M",
+            "tenure_years": 2.2,
+            "performance_score": 1.8
+          }
+        ],
+        "gap_percent": 31.6,
+        "reason": "Earns 31.6% less than the highest-paid comparable peer in Controller L5 / Finance",
+        "metadata": {
+          "peer_count": 2,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0035",
+    "name": "Rebecca Kim",
+    "department": "Engineering",
+    "role": "ML Engineer",
+    "level": "L6",
+    "salary": 160000,
+    "gender": "F",
+    "tenure_years": 7.0,
+    "performance_score": 4.6,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 160000,
+        "comparison_salary": 241000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0205",
+            "name": "Larry King",
+            "salary": 241000,
+            "gender": "M",
+            "tenure_years": 7.8,
+            "performance_score": 4.9
+          }
+        ],
+        "gap_percent": 33.6,
+        "reason": "Earns 33.6% less than the highest-paid comparable peer in ML Engineer L6 / Engineering",
+        "metadata": {
+          "peer_count": 5,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0196",
+    "name": "Emily Khan",
+    "department": "Engineering",
+    "role": "DevOps Engineer",
+    "level": "L5",
+    "salary": 124000,
+    "gender": "F",
+    "tenure_years": 8.8,
+    "performance_score": 3.6,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 124000,
+        "comparison_salary": 184000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0114",
+            "name": "Robert Garcia",
+            "salary": 184000,
+            "gender": "M",
+            "tenure_years": 5.9,
+            "performance_score": 3.6
+          }
+        ],
+        "gap_percent": 32.6,
+        "reason": "Earns 32.6% less than the highest-paid comparable peer in DevOps Engineer L5 / Engineering",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0866",
+    "name": "Maria Harris",
+    "department": "Finance",
+    "role": "Controller",
+    "level": "L2",
+    "salary": 61500,
+    "gender": "F",
+    "tenure_years": 14.4,
+    "performance_score": 3.4,
+    "flag_count": 2,
+    "categories": [
+      {
+        "category": "gender_gap",
+        "label": "Gender Gap",
+        "employee_salary": 61500,
+        "comparison_salary": 88500,
+        "comparison_entity": "Avg of 1 comparable male peer(s)",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0885",
+            "name": "Jack Young",
+            "salary": 88500,
+            "gender": "M",
+            "tenure_years": 14.2,
+            "performance_score": 4.2
+          }
+        ],
+        "gap_percent": 30.5,
+        "reason": "Earns 30.5% less than comparable male peers in Controller L2 / Finance",
+        "metadata": {
+          "peer_count": 1,
+          "threshold_pct": 30.0
+        }
+      },
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 61500,
+        "comparison_salary": 88500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0885",
+            "name": "Jack Young",
+            "salary": 88500,
+            "gender": "M",
+            "tenure_years": 14.2,
+            "performance_score": 4.2
+          }
+        ],
+        "gap_percent": 30.5,
+        "reason": "Earns 30.5% less than the highest-paid comparable peer in Controller L2 / Finance",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0402",
+    "name": "Maria Khan",
+    "department": "Marketing",
+    "role": "Brand Manager",
+    "level": "L2",
+    "salary": 55500,
+    "gender": "F",
+    "tenure_years": 4.4,
+    "performance_score": 3.9,
+    "flag_count": 2,
+    "categories": [
+      {
+        "category": "gender_gap",
+        "label": "Gender Gap",
+        "employee_salary": 55500,
+        "comparison_salary": 81500,
+        "comparison_entity": "Avg of 2 comparable male peer(s)",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0394",
+            "name": "Patrick Perez",
+            "salary": 78000,
+            "gender": "M",
+            "tenure_years": 5.5,
+            "performance_score": 4.8
+          },
+          {
+            "employee_id": "E0495",
+            "name": "Frank Green",
+            "salary": 85000,
+            "gender": "M",
+            "tenure_years": 1.8,
+            "performance_score": 3.9
+          }
+        ],
+        "gap_percent": 31.9,
+        "reason": "Earns 31.9% less than comparable male peers in Brand Manager L2 / Marketing",
+        "metadata": {
+          "peer_count": 2,
+          "threshold_pct": 30.0
+        }
+      },
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 55500,
+        "comparison_salary": 85000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0495",
+            "name": "Frank Green",
+            "salary": 85000,
+            "gender": "M",
+            "tenure_years": 1.8,
+            "performance_score": 3.9
+          }
+        ],
+        "gap_percent": 34.7,
+        "reason": "Earns 34.7% less than the highest-paid comparable peer in Brand Manager L2 / Marketing",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0076",
+    "name": "Charles Young",
+    "department": "Engineering",
+    "role": "ML Engineer",
+    "level": "L4",
+    "salary": 100000,
+    "gender": "M",
+    "tenure_years": 8.3,
+    "performance_score": 3.3,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 100000,
+        "comparison_salary": 145000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0003",
+            "name": "Deborah Thomas",
+            "salary": 145000,
+            "gender": "F",
+            "tenure_years": 10.7,
+            "performance_score": 3.4
+          }
+        ],
+        "gap_percent": 31.0,
+        "reason": "Earns 31.0% less than the highest-paid comparable peer in ML Engineer L4 / Engineering",
+        "metadata": {
+          "peer_count": 4,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0053",
+    "name": "Kevin Lee",
+    "department": "Engineering",
+    "role": "Software Engineer",
+    "level": "L4",
+    "salary": 96000,
+    "gender": "M",
+    "tenure_years": 18.3,
+    "performance_score": 2.8,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 96000,
+        "comparison_salary": 141500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0216",
+            "name": "Ronald Adams",
+            "salary": 141500,
+            "gender": "M",
+            "tenure_years": 16.5,
+            "performance_score": 2.8
+          }
+        ],
+        "gap_percent": 32.2,
+        "reason": "Earns 32.2% less than the highest-paid comparable peer in Software Engineer L4 / Engineering",
+        "metadata": {
+          "peer_count": 5,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0237",
+    "name": "Sarah Hill",
+    "department": "Engineering",
+    "role": "Software Engineer",
+    "level": "L4",
+    "salary": 95500,
+    "gender": "F",
+    "tenure_years": 18.0,
+    "performance_score": 2.4,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 95500,
+        "comparison_salary": 141500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0216",
+            "name": "Ronald Adams",
+            "salary": 141500,
+            "gender": "M",
+            "tenure_years": 16.5,
+            "performance_score": 2.8
+          }
+        ],
+        "gap_percent": 32.5,
+        "reason": "Earns 32.5% less than the highest-paid comparable peer in Software Engineer L4 / Engineering",
+        "metadata": {
+          "peer_count": 6,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0204",
+    "name": "Jeffrey Brown",
+    "department": "Engineering",
+    "role": "QA Engineer",
+    "level": "L4",
+    "salary": 94000,
+    "gender": "M",
+    "tenure_years": 5.5,
+    "performance_score": 3.5,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 94000,
+        "comparison_salary": 140000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0290",
+            "name": "Gary Perez",
+            "salary": 140000,
+            "gender": "M",
+            "tenure_years": 7.7,
+            "performance_score": 2.6
+          }
+        ],
+        "gap_percent": 32.9,
+        "reason": "Earns 32.9% less than the highest-paid comparable peer in QA Engineer L4 / Engineering",
+        "metadata": {
+          "peer_count": 2,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0684",
+    "name": "Carol Hall",
+    "department": "Sales",
+    "role": "Sales Manager",
+    "level": "L1",
+    "salary": 43000,
+    "gender": "F",
+    "tenure_years": 14.8,
+    "performance_score": 2.7,
+    "flag_count": 2,
+    "categories": [
+      {
+        "category": "gender_gap",
+        "label": "Gender Gap",
+        "employee_salary": 43000,
+        "comparison_salary": 64000,
+        "comparison_entity": "Avg of 1 comparable male peer(s)",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0660",
+            "name": "Scott Lopez",
+            "salary": 64000,
+            "gender": "M",
+            "tenure_years": 11.9,
+            "performance_score": 3.4
+          }
+        ],
+        "gap_percent": 32.8,
+        "reason": "Earns 32.8% less than comparable male peers in Sales Manager L1 / Sales",
+        "metadata": {
+          "peer_count": 1,
+          "threshold_pct": 30.0
+        }
+      },
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 43000,
+        "comparison_salary": 64000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0660",
+            "name": "Scott Lopez",
+            "salary": 64000,
+            "gender": "M",
+            "tenure_years": 11.9,
+            "performance_score": 3.4
+          }
+        ],
+        "gap_percent": 32.8,
+        "reason": "Earns 32.8% less than the highest-paid comparable peer in Sales Manager L1 / Sales",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0043",
+    "name": "Jonathan Lopez",
+    "department": "Engineering",
+    "role": "Software Engineer",
+    "level": "L4",
+    "salary": 83000,
+    "gender": "M",
+    "tenure_years": 17.4,
+    "performance_score": 2.7,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 83000,
+        "comparison_salary": 141500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0216",
+            "name": "Ronald Adams",
+            "salary": 141500,
+            "gender": "M",
+            "tenure_years": 16.5,
+            "performance_score": 2.8
+          }
+        ],
+        "gap_percent": 41.3,
+        "reason": "Earns 41.3% less than the highest-paid comparable peer in Software Engineer L4 / Engineering",
+        "metadata": {
+          "peer_count": 5,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0406",
+    "name": "Ashley Gonzalez",
+    "department": "Marketing",
+    "role": "Brand Manager",
+    "level": "L4",
+    "salary": 83000,
+    "gender": "F",
+    "tenure_years": 12.4,
+    "performance_score": 1.5,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 83000,
+        "comparison_salary": 124000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0350",
+            "name": "Brandon Martinez",
+            "salary": 124000,
+            "gender": "M",
+            "tenure_years": 11.2,
+            "performance_score": 2.5
+          }
+        ],
+        "gap_percent": 33.1,
+        "reason": "Earns 33.1% less than the highest-paid comparable peer in Brand Manager L4 / Marketing",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0202",
+    "name": "Maria Roberts",
+    "department": "Engineering",
+    "role": "DevOps Engineer",
+    "level": "L4",
+    "salary": 75500,
+    "gender": "F",
+    "tenure_years": 17.3,
+    "performance_score": 3.3,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 75500,
+        "comparison_salary": 121000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0012",
+            "name": "Kai Torres",
+            "salary": 121000,
+            "gender": "NB",
+            "tenure_years": 17.4,
+            "performance_score": 4.2
+          }
+        ],
+        "gap_percent": 37.6,
+        "reason": "Earns 37.6% less than the highest-paid comparable peer in DevOps Engineer L4 / Engineering",
+        "metadata": {
+          "peer_count": 4,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0769",
+    "name": "Barbara Roberts",
+    "department": "Support",
+    "role": "Support Lead",
+    "level": "L3",
+    "salary": 75000,
+    "gender": "F",
+    "tenure_years": 10.1,
+    "performance_score": 3.8,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 75000,
+        "comparison_salary": 114500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0782",
+            "name": "Amanda Patel",
+            "salary": 114500,
+            "gender": "F",
+            "tenure_years": 12.1,
+            "performance_score": 4.5
+          }
+        ],
+        "gap_percent": 34.5,
+        "reason": "Earns 34.5% less than the highest-paid comparable peer in Support Lead L3 / Support",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0252",
+    "name": "Donna Davis",
+    "department": "Engineering",
+    "role": "Software Engineer",
+    "level": "L3",
+    "salary": 74500,
+    "gender": "F",
+    "tenure_years": 11.3,
+    "performance_score": 4.3,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 74500,
+        "comparison_salary": 113500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0293",
+            "name": "Samuel Patel",
+            "salary": 113500,
+            "gender": "M",
+            "tenure_years": 13.2,
+            "performance_score": 5.0
+          }
+        ],
+        "gap_percent": 34.4,
+        "reason": "Earns 34.4% less than the highest-paid comparable peer in Software Engineer L3 / Engineering",
+        "metadata": {
+          "peer_count": 4,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0129",
+    "name": "Andrew Baker",
+    "department": "Engineering",
+    "role": "QA Engineer",
+    "level": "L3",
+    "salary": 71000,
+    "gender": "M",
+    "tenure_years": 14.8,
+    "performance_score": 3.4,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 71000,
+        "comparison_salary": 106500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0142",
+            "name": "Steven White",
+            "salary": 106500,
+            "gender": "M",
+            "tenure_years": 17.1,
+            "performance_score": 2.5
+          }
+        ],
+        "gap_percent": 33.3,
+        "reason": "Earns 33.3% less than the highest-paid comparable peer in QA Engineer L3 / Engineering",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0209",
+    "name": "Mary Mitchell",
+    "department": "Engineering",
+    "role": "Software Engineer",
+    "level": "L3",
+    "salary": 69500,
+    "gender": "F",
+    "tenure_years": 7.5,
+    "performance_score": 2.3,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 69500,
+        "comparison_salary": 104000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0171",
+            "name": "Blake Williams",
+            "salary": 104000,
+            "gender": "NB",
+            "tenure_years": 7.4,
+            "performance_score": 2.8
+          }
+        ],
+        "gap_percent": 33.2,
+        "reason": "Earns 33.2% less than the highest-paid comparable peer in Software Engineer L3 / Engineering",
+        "metadata": {
+          "peer_count": 2,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0787",
+    "name": "Ashley Walker",
+    "department": "Support",
+    "role": "Support Agent",
+    "level": "L3",
+    "salary": 67500,
+    "gender": "F",
+    "tenure_years": 17.0,
+    "performance_score": 2.0,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 67500,
+        "comparison_salary": 98000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0797",
+            "name": "Kathleen Carter",
+            "salary": 98000,
+            "gender": "F",
+            "tenure_years": 18.6,
+            "performance_score": 2.7
+          }
+        ],
+        "gap_percent": 31.1,
+        "reason": "Earns 31.1% less than the highest-paid comparable peer in Support Agent L3 / Support",
+        "metadata": {
+          "peer_count": 4,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0387",
+    "name": "Sharon Campbell",
+    "department": "Marketing",
+    "role": "Campaign Manager",
+    "level": "L3",
+    "salary": 67500,
+    "gender": "F",
+    "tenure_years": 18.0,
+    "performance_score": 3.2,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 67500,
+        "comparison_salary": 102000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0342",
+            "name": "Elizabeth Young",
+            "salary": 102000,
+            "gender": "F",
+            "tenure_years": 16.8,
+            "performance_score": 3.7
+          }
+        ],
+        "gap_percent": 33.8,
+        "reason": "Earns 33.8% less than the highest-paid comparable peer in Campaign Manager L3 / Marketing",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0349",
+    "name": "Daniel Baker",
+    "department": "Marketing",
+    "role": "Brand Manager",
+    "level": "L3",
+    "salary": 61500,
+    "gender": "M",
+    "tenure_years": 16.1,
+    "performance_score": 3.6,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 61500,
+        "comparison_salary": 89000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0318",
+            "name": "Steven Harris",
+            "salary": 89000,
+            "gender": "M",
+            "tenure_years": 17.3,
+            "performance_score": 3.5
+          }
+        ],
+        "gap_percent": 30.9,
+        "reason": "Earns 30.9% less than the highest-paid comparable peer in Brand Manager L3 / Marketing",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0722",
+    "name": "Paul Patel",
+    "department": "Support",
+    "role": "Support Lead",
+    "level": "L2",
+    "salary": 58500,
+    "gender": "M",
+    "tenure_years": 17.4,
+    "performance_score": 3.3,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 58500,
+        "comparison_salary": 84000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0839",
+            "name": "Kevin Miller",
+            "salary": 84000,
+            "gender": "M",
+            "tenure_years": 18.2,
+            "performance_score": 3.8
+          }
+        ],
+        "gap_percent": 30.4,
+        "reason": "Earns 30.4% less than the highest-paid comparable peer in Support Lead L2 / Support",
+        "metadata": {
+          "peer_count": 5,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0734",
+    "name": "Donna Jones",
+    "department": "Support",
+    "role": "Technical Support",
+    "level": "L2",
+    "salary": 54500,
+    "gender": "F",
+    "tenure_years": 7.1,
+    "performance_score": 3.6,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 54500,
+        "comparison_salary": 84000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0834",
+            "name": "Ashley Williams",
+            "salary": 84000,
+            "gender": "F",
+            "tenure_years": 8.3,
+            "performance_score": 3.5
+          }
+        ],
+        "gap_percent": 35.1,
+        "reason": "Earns 35.1% less than the highest-paid comparable peer in Technical Support L2 / Support",
+        "metadata": {
+          "peer_count": 6,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0303",
+    "name": "Cameron Jackson",
+    "department": "Marketing",
+    "role": "Campaign Manager",
+    "level": "L2",
+    "salary": 53500,
+    "gender": "NB",
+    "tenure_years": 6.8,
+    "performance_score": 3.5,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 53500,
+        "comparison_salary": 80500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0474",
+            "name": "Andrew Carter",
+            "salary": 80500,
+            "gender": "M",
+            "tenure_years": 8.8,
+            "performance_score": 3.8
+          }
+        ],
+        "gap_percent": 33.5,
+        "reason": "Earns 33.5% less than the highest-paid comparable peer in Campaign Manager L2 / Marketing",
+        "metadata": {
+          "peer_count": 4,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0739",
+    "name": "Sandra Hall",
+    "department": "Support",
+    "role": "Technical Support",
+    "level": "L2",
+    "salary": 53500,
+    "gender": "F",
+    "tenure_years": 10.9,
+    "performance_score": 2.5,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 53500,
+        "comparison_salary": 84000,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0834",
+            "name": "Ashley Williams",
+            "salary": 84000,
+            "gender": "F",
+            "tenure_years": 8.3,
+            "performance_score": 3.5
+          }
+        ],
+        "gap_percent": 36.3,
+        "reason": "Earns 36.3% less than the highest-paid comparable peer in Technical Support L2 / Support",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0699",
+    "name": "Mary Rivera",
+    "department": "Sales",
+    "role": "Enterprise Sales",
+    "level": "L2",
+    "salary": 53000,
+    "gender": "F",
+    "tenure_years": 13.9,
+    "performance_score": 3.5,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 53000,
+        "comparison_salary": 78500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0584",
+            "name": "Alex Smith",
+            "salary": 78500,
+            "gender": "NB",
+            "tenure_years": 16.4,
+            "performance_score": 3.8
+          }
+        ],
+        "gap_percent": 32.5,
+        "reason": "Earns 32.5% less than the highest-paid comparable peer in Enterprise Sales L2 / Sales",
+        "metadata": {
+          "peer_count": 2,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  },
+  {
+    "employee_id": "E0674",
+    "name": "Stephen Roberts",
+    "department": "Sales",
+    "role": "Account Executive",
+    "level": "L1",
+    "salary": 40500,
+    "gender": "M",
+    "tenure_years": 1.6,
+    "performance_score": 2.8,
+    "flag_count": 1,
+    "categories": [
+      {
+        "category": "role_gap",
+        "label": "Role Gap",
+        "employee_salary": 40500,
+        "comparison_salary": 59500,
+        "comparison_entity": "Top earner in comparable peer group",
+        "comparison_individuals": [
+          {
+            "employee_id": "E0646",
+            "name": "Gary Young",
+            "salary": 59500,
+            "gender": "M",
+            "tenure_years": 1.7,
+            "performance_score": 2.4
+          }
+        ],
+        "gap_percent": 31.9,
+        "reason": "Earns 31.9% less than the highest-paid comparable peer in Account Executive L1 / Sales",
+        "metadata": {
+          "peer_count": 3,
+          "threshold_pct": 30.0
+        }
+      }
+    ]
+  }
+]

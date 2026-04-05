@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0209",
+  "name": "Mary Mitchell",
+  "department": "Engineering",
+  "role": "Software Engineer",
+  "level": "L3",
+  "salary": 69500,
+  "gender": "F",
+  "tenure_years": 7.5,
+  "performance_score": 2.3,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 69500,
+      "comparison_salary": 104000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0171",
+          "name": "Blake Williams",
+          "salary": 104000,
+          "gender": "NB",
+          "tenure_years": 7.4,
+          "performance_score": 2.8
+        }
+      ],
+      "gap_percent": 33.2,
+      "reason": "Earns 33.2% less than the highest-paid comparable peer in Software Engineer L3 / Engineering",
+      "metadata": {
+        "peer_count": 2,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

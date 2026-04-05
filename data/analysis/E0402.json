@@ -1,0 +1,68 @@
+{
+  "employee_id": "E0402",
+  "name": "Maria Khan",
+  "department": "Marketing",
+  "role": "Brand Manager",
+  "level": "L2",
+  "salary": 55500,
+  "gender": "F",
+  "tenure_years": 4.4,
+  "performance_score": 3.9,
+  "flag_count": 2,
+  "categories": [
+    {
+      "category": "gender_gap",
+      "label": "Gender Gap",
+      "employee_salary": 55500,
+      "comparison_salary": 81500,
+      "comparison_entity": "Avg of 2 comparable male peer(s)",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0394",
+          "name": "Patrick Perez",
+          "salary": 78000,
+          "gender": "M",
+          "tenure_years": 5.5,
+          "performance_score": 4.8
+        },
+        {
+          "employee_id": "E0495",
+          "name": "Frank Green",
+          "salary": 85000,
+          "gender": "M",
+          "tenure_years": 1.8,
+          "performance_score": 3.9
+        }
+      ],
+      "gap_percent": 31.9,
+      "reason": "Earns 31.9% less than comparable male peers in Brand Manager L2 / Marketing",
+      "metadata": {
+        "peer_count": 2,
+        "threshold_pct": 30.0
+      }
+    },
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 55500,
+      "comparison_salary": 85000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0495",
+          "name": "Frank Green",
+          "salary": 85000,
+          "gender": "M",
+          "tenure_years": 1.8,
+          "performance_score": 3.9
+        }
+      ],
+      "gap_percent": 34.7,
+      "reason": "Earns 34.7% less than the highest-paid comparable peer in Brand Manager L2 / Marketing",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

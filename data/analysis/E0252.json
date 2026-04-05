@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0252",
+  "name": "Donna Davis",
+  "department": "Engineering",
+  "role": "Software Engineer",
+  "level": "L3",
+  "salary": 74500,
+  "gender": "F",
+  "tenure_years": 11.3,
+  "performance_score": 4.3,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 74500,
+      "comparison_salary": 113500,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0293",
+          "name": "Samuel Patel",
+          "salary": 113500,
+          "gender": "M",
+          "tenure_years": 13.2,
+          "performance_score": 5.0
+        }
+      ],
+      "gap_percent": 34.4,
+      "reason": "Earns 34.4% less than the highest-paid comparable peer in Software Engineer L3 / Engineering",
+      "metadata": {
+        "peer_count": 4,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

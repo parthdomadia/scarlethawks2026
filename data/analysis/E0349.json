@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0349",
+  "name": "Daniel Baker",
+  "department": "Marketing",
+  "role": "Brand Manager",
+  "level": "L3",
+  "salary": 61500,
+  "gender": "M",
+  "tenure_years": 16.1,
+  "performance_score": 3.6,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 61500,
+      "comparison_salary": 89000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0318",
+          "name": "Steven Harris",
+          "salary": 89000,
+          "gender": "M",
+          "tenure_years": 17.3,
+          "performance_score": 3.5
+        }
+      ],
+      "gap_percent": 30.9,
+      "reason": "Earns 30.9% less than the highest-paid comparable peer in Brand Manager L3 / Marketing",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

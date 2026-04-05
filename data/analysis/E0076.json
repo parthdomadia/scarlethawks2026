@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0076",
+  "name": "Charles Young",
+  "department": "Engineering",
+  "role": "ML Engineer",
+  "level": "L4",
+  "salary": 100000,
+  "gender": "M",
+  "tenure_years": 8.3,
+  "performance_score": 3.3,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 100000,
+      "comparison_salary": 145000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0003",
+          "name": "Deborah Thomas",
+          "salary": 145000,
+          "gender": "F",
+          "tenure_years": 10.7,
+          "performance_score": 3.4
+        }
+      ],
+      "gap_percent": 31.0,
+      "reason": "Earns 31.0% less than the highest-paid comparable peer in ML Engineer L4 / Engineering",
+      "metadata": {
+        "peer_count": 4,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

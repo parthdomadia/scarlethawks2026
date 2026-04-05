@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0722",
+  "name": "Paul Patel",
+  "department": "Support",
+  "role": "Support Lead",
+  "level": "L2",
+  "salary": 58500,
+  "gender": "M",
+  "tenure_years": 17.4,
+  "performance_score": 3.3,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 58500,
+      "comparison_salary": 84000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0839",
+          "name": "Kevin Miller",
+          "salary": 84000,
+          "gender": "M",
+          "tenure_years": 18.2,
+          "performance_score": 3.8
+        }
+      ],
+      "gap_percent": 30.4,
+      "reason": "Earns 30.4% less than the highest-paid comparable peer in Support Lead L2 / Support",
+      "metadata": {
+        "peer_count": 5,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

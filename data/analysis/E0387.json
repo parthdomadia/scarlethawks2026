@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0387",
+  "name": "Sharon Campbell",
+  "department": "Marketing",
+  "role": "Campaign Manager",
+  "level": "L3",
+  "salary": 67500,
+  "gender": "F",
+  "tenure_years": 18.0,
+  "performance_score": 3.2,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 67500,
+      "comparison_salary": 102000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0342",
+          "name": "Elizabeth Young",
+          "salary": 102000,
+          "gender": "F",
+          "tenure_years": 16.8,
+          "performance_score": 3.7
+        }
+      ],
+      "gap_percent": 33.8,
+      "reason": "Earns 33.8% less than the highest-paid comparable peer in Campaign Manager L3 / Marketing",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

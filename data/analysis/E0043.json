@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0043",
+  "name": "Jonathan Lopez",
+  "department": "Engineering",
+  "role": "Software Engineer",
+  "level": "L4",
+  "salary": 83000,
+  "gender": "M",
+  "tenure_years": 17.4,
+  "performance_score": 2.7,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 83000,
+      "comparison_salary": 141500,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0216",
+          "name": "Ronald Adams",
+          "salary": 141500,
+          "gender": "M",
+          "tenure_years": 16.5,
+          "performance_score": 2.8
+        }
+      ],
+      "gap_percent": 41.3,
+      "reason": "Earns 41.3% less than the highest-paid comparable peer in Software Engineer L4 / Engineering",
+      "metadata": {
+        "peer_count": 5,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "employee_id": "E0684",
+  "name": "Carol Hall",
+  "department": "Sales",
+  "role": "Sales Manager",
+  "level": "L1",
+  "salary": 43000,
+  "gender": "F",
+  "tenure_years": 14.8,
+  "performance_score": 2.7,
+  "flag_count": 2,
+  "categories": [
+    {
+      "category": "gender_gap",
+      "label": "Gender Gap",
+      "employee_salary": 43000,
+      "comparison_salary": 64000,
+      "comparison_entity": "Avg of 1 comparable male peer(s)",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0660",
+          "name": "Scott Lopez",
+          "salary": 64000,
+          "gender": "M",
+          "tenure_years": 11.9,
+          "performance_score": 3.4
+        }
+      ],
+      "gap_percent": 32.8,
+      "reason": "Earns 32.8% less than comparable male peers in Sales Manager L1 / Sales",
+      "metadata": {
+        "peer_count": 1,
+        "threshold_pct": 30.0
+      }
+    },
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 43000,
+      "comparison_salary": 64000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0660",
+          "name": "Scott Lopez",
+          "salary": 64000,
+          "gender": "M",
+          "tenure_years": 11.9,
+          "performance_score": 3.4
+        }
+      ],
+      "gap_percent": 32.8,
+      "reason": "Earns 32.8% less than the highest-paid comparable peer in Sales Manager L1 / Sales",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

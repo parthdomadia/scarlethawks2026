@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0035",
+  "name": "Rebecca Kim",
+  "department": "Engineering",
+  "role": "ML Engineer",
+  "level": "L6",
+  "salary": 160000,
+  "gender": "F",
+  "tenure_years": 7.0,
+  "performance_score": 4.6,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 160000,
+      "comparison_salary": 241000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0205",
+          "name": "Larry King",
+          "salary": 241000,
+          "gender": "M",
+          "tenure_years": 7.8,
+          "performance_score": 4.9
+        }
+      ],
+      "gap_percent": 33.6,
+      "reason": "Earns 33.6% less than the highest-paid comparable peer in ML Engineer L6 / Engineering",
+      "metadata": {
+        "peer_count": 5,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

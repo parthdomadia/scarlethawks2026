@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0769",
+  "name": "Barbara Roberts",
+  "department": "Support",
+  "role": "Support Lead",
+  "level": "L3",
+  "salary": 75000,
+  "gender": "F",
+  "tenure_years": 10.1,
+  "performance_score": 3.8,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 75000,
+      "comparison_salary": 114500,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0782",
+          "name": "Amanda Patel",
+          "salary": 114500,
+          "gender": "F",
+          "tenure_years": 12.1,
+          "performance_score": 4.5
+        }
+      ],
+      "gap_percent": 34.5,
+      "reason": "Earns 34.5% less than the highest-paid comparable peer in Support Lead L3 / Support",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

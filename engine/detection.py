@@ -203,6 +203,176 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Comparison Details (for analysis panel / JSON export)
+# ---------------------------------------------------------------------------
+
+def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None:
+    """
+    For a flagged employee, return structured comparison data for every
+    category they are flagged in.  Returns None if the employee is not
+    found or not flagged.
+    """
+
+    # --- locate target row ---
+    target = None
+    for e in employees:
+        if e.get("employee_id") == target_id:
+            target = e
+            break
+    if target is None:
+        return None
+
+    # --- group by dept/role/level (same logic as detect_flagged_employees) ---
+    groups = defaultdict(list)
+    for e in employees:
+        key = (e.get("department"), e.get("role"), e.get("level"))
+        groups[key].append(e)
+
+    key = (target.get("department"), target.get("role"), target.get("level"))
+    members = groups.get(key, [])
+
+    if len(members) < 2:
+        return None
+
+    # --- precompute sub-groups ---
+    males   = [m for m in members if m.get("gender") == "M"]
+    females = [f for f in members if f.get("gender") == "F"]
+    veterans  = [v for v in members if (v.get("tenure_years") or 0) >= TENURE_VETERAN]
+    new_hires = [n for n in members if (n.get("tenure_years") or 0) <= TENURE_NEW]
+    low_perf  = [lp for lp in members if (lp.get("performance_score") or 0) <= 3.0]
+
+    categories = []
+
+    def _person_summary(e):
+        return {
+            "employee_id": e.get("employee_id"),
+            "name": f"{e.get('first_name')} {e.get('last_name')}",
+            "salary": e.get("salary"),
+            "gender": e.get("gender"),
+            "tenure_years": e.get("tenure_years"),
+            "performance_score": e.get("performance_score"),
+        }
+
+    # ---- 1. Gender Gap ----
+    if target.get("gender") == "F":
+        comparable_males = [m for m in males if is_comparable(target, m)]
+        if comparable_males:
+            avg_male = statistics.mean([m["salary"] for m in comparable_males])
+            if target["salary"] < avg_male * (1 - GAP_THRESHOLD):
+                gap_pct = round((avg_male - target["salary"]) / avg_male * 100, 1)
+                categories.append({
+                    "category": "gender_gap",
+                    "label": "Gender Gap",
+                    "employee_salary": target["salary"],
+                    "comparison_salary": round(avg_male),
+                    "comparison_entity": f"Avg of {len(comparable_males)} comparable male peer(s)",
+                    "comparison_individuals": [_person_summary(m) for m in comparable_males],
+                    "gap_percent": gap_pct,
+                    "reason": (
+                        f"Earns {gap_pct}% less than comparable male peers "
+                        f"in {target.get('role')} {target.get('level')} / {target.get('department')}"
+                    ),
+                    "metadata": {
+                        "peer_count": len(comparable_males),
+                        "threshold_pct": GAP_THRESHOLD * 100,
+                    },
+                })
+
+    # ---- 2. Tenure Compression ----
+    if (target.get("tenure_years") or 0) >= TENURE_VETERAN and new_hires:
+        comparable_new = [n for n in new_hires if is_comparable(target, n)]
+        if comparable_new:
+            avg_new = statistics.mean([n["salary"] for n in comparable_new])
+            if target["salary"] < avg_new * (1 - GAP_THRESHOLD):
+                gap_pct = round((avg_new - target["salary"]) / avg_new * 100, 1)
+                categories.append({
+                    "category": "tenure_compression",
+                    "label": "Tenure Compression",
+                    "employee_salary": target["salary"],
+                    "comparison_salary": round(avg_new),
+                    "comparison_entity": f"Avg of {len(comparable_new)} new hire(s) (≤{TENURE_NEW}yr)",
+                    "comparison_individuals": [_person_summary(n) for n in comparable_new],
+                    "gap_percent": gap_pct,
+                    "reason": (
+                        f"Veteran ({target.get('tenure_years')}yr) earns {gap_pct}% less "
+                        f"than comparable new hires in same role"
+                    ),
+                    "metadata": {
+                        "veteran_tenure": target.get("tenure_years"),
+                        "peer_count": len(comparable_new),
+                        "threshold_pct": GAP_THRESHOLD * 100,
+                    },
+                })
+
+    # ---- 3. Role Gap ----
+    comparable_peers = [p for p in members if is_comparable(target, p)]
+    if comparable_peers:
+        top_peer = max(comparable_peers, key=lambda p: p["salary"])
+        max_peer_salary = top_peer["salary"]
+        if target["salary"] < max_peer_salary * (1 - GAP_THRESHOLD):
+            gap_pct = round((max_peer_salary - target["salary"]) / max_peer_salary * 100, 1)
+            categories.append({
+                "category": "role_gap",
+                "label": "Role Gap",
+                "employee_salary": target["salary"],
+                "comparison_salary": max_peer_salary,
+                "comparison_entity": f"Top earner in comparable peer group",
+                "comparison_individuals": [_person_summary(top_peer)],
+                "gap_percent": gap_pct,
+                "reason": (
+                    f"Earns {gap_pct}% less than the highest-paid comparable peer "
+                    f"in {target.get('role')} {target.get('level')} / {target.get('department')}"
+                ),
+                "metadata": {
+                    "peer_count": len(comparable_peers),
+                    "threshold_pct": GAP_THRESHOLD * 100,
+                },
+            })
+
+    # ---- 4. Performance Misalignment ----
+    if (target.get("performance_score") or 0) >= 4.0:
+        comparable_low = [lp for lp in low_perf if is_comparable(target, lp)]
+        if comparable_low:
+            avg_low = statistics.mean([lp["salary"] for lp in comparable_low])
+            if target["salary"] < avg_low:
+                gap_pct = round((avg_low - target["salary"]) / avg_low * 100, 1)
+                categories.append({
+                    "category": "performance_misalignment",
+                    "label": "Performance Misalignment",
+                    "employee_salary": target["salary"],
+                    "comparison_salary": round(avg_low),
+                    "comparison_entity": f"Avg of {len(comparable_low)} low performer(s) (score ≤3.0)",
+                    "comparison_individuals": [_person_summary(lp) for lp in comparable_low],
+                    "gap_percent": gap_pct,
+                    "reason": (
+                        f"High performer (score {target.get('performance_score')}) earns {gap_pct}% "
+                        f"less than comparable low performers in same role"
+                    ),
+                    "metadata": {
+                        "employee_perf_score": target.get("performance_score"),
+                        "peer_count": len(comparable_low),
+                    },
+                })
+
+    if not categories:
+        return None
+
+    return {
+        "employee_id": target_id,
+        "name": f"{target.get('first_name')} {target.get('last_name')}",
+        "department": target.get("department"),
+        "role": target.get("role"),
+        "level": target.get("level"),
+        "salary": target.get("salary"),
+        "gender": target.get("gender"),
+        "tenure_years": target.get("tenure_years"),
+        "performance_score": target.get("performance_score"),
+        "flag_count": len(categories),
+        "categories": categories,
+    }
+
+
+# ---------------------------------------------------------------------------
 # File Loader
 # ---------------------------------------------------------------------------
 

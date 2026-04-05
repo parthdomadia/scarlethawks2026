@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0202",
+  "name": "Maria Roberts",
+  "department": "Engineering",
+  "role": "DevOps Engineer",
+  "level": "L4",
+  "salary": 75500,
+  "gender": "F",
+  "tenure_years": 17.3,
+  "performance_score": 3.3,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 75500,
+      "comparison_salary": 121000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0012",
+          "name": "Kai Torres",
+          "salary": 121000,
+          "gender": "NB",
+          "tenure_years": 17.4,
+          "performance_score": 4.2
+        }
+      ],
+      "gap_percent": 37.6,
+      "reason": "Earns 37.6% less than the highest-paid comparable peer in DevOps Engineer L4 / Engineering",
+      "metadata": {
+        "peer_count": 4,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

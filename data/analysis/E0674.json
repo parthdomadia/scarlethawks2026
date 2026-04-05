@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0674",
+  "name": "Stephen Roberts",
+  "department": "Sales",
+  "role": "Account Executive",
+  "level": "L1",
+  "salary": 40500,
+  "gender": "M",
+  "tenure_years": 1.6,
+  "performance_score": 2.8,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 40500,
+      "comparison_salary": 59500,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0646",
+          "name": "Gary Young",
+          "salary": 59500,
+          "gender": "M",
+          "tenure_years": 1.7,
+          "performance_score": 2.4
+        }
+      ],
+      "gap_percent": 31.9,
+      "reason": "Earns 31.9% less than the highest-paid comparable peer in Account Executive L1 / Sales",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}

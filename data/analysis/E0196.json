@@ -1,0 +1,37 @@
+{
+  "employee_id": "E0196",
+  "name": "Emily Khan",
+  "department": "Engineering",
+  "role": "DevOps Engineer",
+  "level": "L5",
+  "salary": 124000,
+  "gender": "F",
+  "tenure_years": 8.8,
+  "performance_score": 3.6,
+  "flag_count": 1,
+  "categories": [
+    {
+      "category": "role_gap",
+      "label": "Role Gap",
+      "employee_salary": 124000,
+      "comparison_salary": 184000,
+      "comparison_entity": "Top earner in comparable peer group",
+      "comparison_individuals": [
+        {
+          "employee_id": "E0114",
+          "name": "Robert Garcia",
+          "salary": 184000,
+          "gender": "M",
+          "tenure_years": 5.9,
+          "performance_score": 3.6
+        }
+      ],
+      "gap_percent": 32.6,
+      "reason": "Earns 32.6% less than the highest-paid comparable peer in DevOps Engineer L5 / Engineering",
+      "metadata": {
+        "peer_count": 3,
+        "threshold_pct": 30.0
+      }
+    }
+  ]
+}
