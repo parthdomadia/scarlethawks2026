@@ -29,10 +29,20 @@ def dashboard():
     employees = _fetch_all_employees()
     flagged = detection.detect_flagged_employees(employees)
 
-    # Rough cost estimates per flagged employee (salary-proportional).
-    # TODO: replace with engine-provided fix_cost/risk_cost when available.
-    fix_cost = sum(int(f.get("salary", 0) * 0.05) for f in flagged)
-    risk_cost = sum(int(f.get("salary", 0) * 0.35) for f in flagged)
+    # Data-driven costs: sum per-employee fix_cost + risk_cost from the engine
+    fix_cost = 0
+    risk_cost = 0
+    for f in flagged:
+        details = detection.get_comparison_details(f["employee_id"], employees)
+        cats = details.get("categories", []) if details else []
+        costs = detection.compute_costs(
+            salary=f.get("salary") or 0,
+            level=f.get("level"),
+            tenure_years=(details or {}).get("tenure_years"),
+            categories=cats,
+        )
+        fix_cost += costs["fix_cost"]
+        risk_cost += costs["risk_cost"]
 
     # Build dept flagged counts
     dept_flagged = {}

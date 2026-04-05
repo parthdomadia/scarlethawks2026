@@ -10,7 +10,7 @@ if str(_REPO_ROOT) not in sys.path:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import health, employees, dashboard, gaps
+from app.routers import health, employees, dashboard, gaps, simulator
 
 app = FastAPI(title="PayGap Radar API")
 
@@ -26,3 +26,4 @@ app.include_router(health.router, prefix="/api")
 app.include_router(employees.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(gaps.router, prefix="/api")
+app.include_router(simulator.router, prefix="/api")

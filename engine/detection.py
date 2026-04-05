@@ -204,6 +204,71 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Cost Model (data-driven fix_cost / risk_cost)
+# ---------------------------------------------------------------------------
+
+LEGAL_TENURE_CAP_YEARS = 3       # EEOC back-pay cap
+DISENGAGEMENT_RATE     = 0.20    # per flag
+
+def _replacement_multiplier(level: str | None) -> float:
+    """L1-L3: 0.50 | L4-L5: 1.0 | L6+: 1.5"""
+    if not level:
+        return 0.5
+    try:
+        n = int(str(level).lstrip("Ll"))
+    except (ValueError, TypeError):
+        return 0.5
+    if n <= 3:
+        return 0.5
+    if n <= 5:
+        return 1.0
+    return 1.5
+
+
+def compute_costs(
+    salary: float,
+    level: str | None,
+    tenure_years: float | None,
+    categories: list[dict],
+) -> dict:
+    """
+    Data-driven fix_cost + risk_cost for a single flagged employee.
+
+    fix_cost  = sum(comparison_salary - employee_salary) across flagged categories
+    risk_cost = replacement_cost + legal_exposure + disengagement_cost
+        replacement_cost   = salary * multiplier(level)
+        legal_exposure     = sum(salary * gap_pct/100 * min(tenure, 3)) per category
+        disengagement_cost = salary * 0.20 * flag_count
+    """
+    salary = float(salary or 0)
+    tenure_capped = min(float(tenure_years or 0), LEGAL_TENURE_CAP_YEARS)
+    flag_count = len(categories)
+
+    fix_cost = 0.0
+    legal_exposure = 0.0
+    for cat in categories:
+        comp_sal = float(cat.get("comparison_salary") or 0)
+        emp_sal  = float(cat.get("employee_salary")   or salary)
+        diff = comp_sal - emp_sal
+        if diff > 0:
+            fix_cost += diff
+        gap_pct = float(cat.get("gap_percent") or 0)
+        legal_exposure += salary * (gap_pct / 100.0) * tenure_capped
+
+    replacement_cost   = salary * _replacement_multiplier(level)
+    disengagement_cost = salary * DISENGAGEMENT_RATE * flag_count
+    risk_cost = replacement_cost + legal_exposure + disengagement_cost
+
+    return {
+        "fix_cost": round(fix_cost),
+        "risk_cost": round(risk_cost),
+        "replacement_cost": round(replacement_cost),
+        "legal_exposure": round(legal_exposure),
+        "disengagement_cost": round(disengagement_cost),
+    }
+
+
+# ---------------------------------------------------------------------------
 # Comparison Details (for analysis panel / JSON export)
 # ---------------------------------------------------------------------------
 

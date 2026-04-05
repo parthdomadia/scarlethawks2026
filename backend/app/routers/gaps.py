@@ -45,9 +45,19 @@ def gaps(
     flagged = detection.detect_flagged_employees(employees)
 
     for f in flagged:
-        salary = f.get("salary") or 0
-        f["fix_cost"] = round(salary * 0.05)
-        f["risk_cost"] = round(salary * 0.35)
+        details = detection.get_comparison_details(f["employee_id"], employees)
+        cats = details.get("categories", []) if details else []
+        costs = detection.compute_costs(
+            salary=f.get("salary") or 0,
+            level=f.get("level"),
+            tenure_years=(details or {}).get("tenure_years"),
+            categories=cats,
+        )
+        f["fix_cost"] = costs["fix_cost"]
+        f["risk_cost"] = costs["risk_cost"]
+        f["replacement_cost"] = costs["replacement_cost"]
+        f["legal_exposure"] = costs["legal_exposure"]
+        f["disengagement_cost"] = costs["disengagement_cost"]
 
     if department:
         flagged = [f for f in flagged if f.get("department") == department]
@@ -69,9 +79,13 @@ def gap_detail(employee_id: str):
     details = detection.get_comparison_details(employee_id, employees)
     if details is None:
         raise HTTPException(status_code=404, detail="Employee not found or not flagged")
-    salary = details.get("salary") or 0
-    details["fix_cost"] = round(salary * 0.05)
-    details["risk_cost"] = round(salary * 0.35)
+    costs = detection.compute_costs(
+        salary=details.get("salary") or 0,
+        level=details.get("level"),
+        tenure_years=details.get("tenure_years"),
+        categories=details.get("categories", []),
+    )
+    details.update(costs)
 
     # Auto-persist to gap_comparisons — skip duplicates
     import uuid
