@@ -19,13 +19,42 @@ from collections import defaultdict
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-GAP_THRESHOLD = 0.10
+GAP_THRESHOLD = 0.15
 GENDER_GAP_THRESHOLD = 0.23
 TENURE_VETERAN = 3.0
 TENURE_NEW = 2.0
 
 TENURE_TOLERANCE = 3        # years
 PERF_TOLERANCE = 1.0        # performance score difference
+
+# Cost-of-living multipliers used by the data generator.
+# Base = Chicago (1.00). All gap math runs on location-normalized salaries
+# so a $130K SF engineer is not unfairly compared to a $100K Austin engineer.
+LOCATION_MULTIPLIERS = {
+    "San Francisco": 1.20,
+    "New York":      1.15,
+    "Seattle":       1.10,
+    "Chicago":       1.00,
+    "Austin":        0.95,
+}
+
+_UNKNOWN_LOCATIONS_SEEN: set[str] = set()
+
+
+def _normalize_salary(salary, location):
+    """
+    Return salary converted to the base (Chicago) cost-of-living.
+    Unknown locations fall back to 1.0× and log a one-time warning.
+    """
+    if salary is None:
+        return 0.0
+    mult = LOCATION_MULTIPLIERS.get(location)
+    if mult is None:
+        if location and location not in _UNKNOWN_LOCATIONS_SEEN:
+            _UNKNOWN_LOCATIONS_SEEN.add(location)
+            print(f"[detection] WARNING: unknown location '{location}', defaulting multiplier to 1.0")
+        mult = 1.0
+    return salary / mult
 
 
 # ---------------------------------------------------------------------------
@@ -88,6 +117,7 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
                     "role": role,
                     "level": level,
                     "salary": e.get("salary"),
+                    "location": e.get("location"),
 
                     # Boolean flags
                     "gender_gap": False,
@@ -95,6 +125,9 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
                     "role_gap": False,
                     "performance_misalignment": False,
                 }
+
+            # Location-normalized salary for the subject employee.
+            e_norm = _normalize_salary(e.get("salary"), e.get("location"))
 
             # --------------------------------------------------
             # 1. Gender Gap (FAIR comparison)
@@ -104,9 +137,11 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
             ]
 
             if comparable_males and e.get("gender") == "F":
-                avg_male = statistics.mean([m["salary"] for m in comparable_males])
+                avg_male_norm = statistics.mean(
+                    [_normalize_salary(m["salary"], m.get("location")) for m in comparable_males]
+                )
 
-                if e["salary"] < avg_male * (1 - GENDER_GAP_THRESHOLD):
+                if e_norm < avg_male_norm * (1 - GENDER_GAP_THRESHOLD):
                     flagged[eid]["gender_gap"] = True
 
             # --------------------------------------------------
@@ -119,9 +154,11 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
                 ]
 
                 if comparable_new:
-                    avg_new = statistics.mean([n["salary"] for n in comparable_new])
+                    avg_new_norm = statistics.mean(
+                        [_normalize_salary(n["salary"], n.get("location")) for n in comparable_new]
+                    )
 
-                    if e["salary"] < avg_new * (1 - GAP_THRESHOLD):
+                    if e_norm < avg_new_norm * (1 - GAP_THRESHOLD):
                         flagged[eid]["tenure_compression"] = True
 
             # --------------------------------------------------
@@ -132,9 +169,11 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
             ]
 
             if comparable_peers:
-                max_peer_salary = max(p["salary"] for p in comparable_peers)
+                max_peer_norm = max(
+                    _normalize_salary(p["salary"], p.get("location")) for p in comparable_peers
+                )
 
-                if e["salary"] < max_peer_salary * (1 - GAP_THRESHOLD):
+                if e_norm < max_peer_norm * (1 - GAP_THRESHOLD):
                     flagged[eid]["role_gap"] = True
 
             # --------------------------------------------------
@@ -147,9 +186,11 @@ def detect_flagged_employees(employees: list[dict]) -> list[dict]:
                 ]
 
                 if comparable_low:
-                    avg_low = statistics.mean([lp["salary"] for lp in comparable_low])
+                    avg_low_norm = statistics.mean(
+                        [_normalize_salary(lp["salary"], lp.get("location")) for lp in comparable_low]
+                    )
 
-                    if e["salary"] < avg_low:
+                    if e_norm < avg_low_norm:
                         flagged[eid]["performance_misalignment"] = True
 
     # -----------------------------------------------------------------------
@@ -309,11 +350,17 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
 
     categories = []
 
+    # Target employee's normalized salary + location multiplier.
+    target_loc = target.get("location")
+    target_mult = LOCATION_MULTIPLIERS.get(target_loc, 1.0)
+    target_norm = _normalize_salary(target.get("salary"), target_loc)
+
     def _person_summary(e):
         return {
             "employee_id": e.get("employee_id"),
             "name": f"{e.get('first_name')} {e.get('last_name')}",
             "salary": e.get("salary"),
+            "location": e.get("location"),
             "gender": e.get("gender"),
             "tenure_years": e.get("tenure_years"),
             "performance_score": e.get("performance_score"),
@@ -323,24 +370,33 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
     if target.get("gender") == "F":
         comparable_males = [m for m in males if is_comparable(target, m)]
         if comparable_males:
-            avg_male = statistics.mean([m["salary"] for m in comparable_males])
-            if target["salary"] < avg_male * (1 - GENDER_GAP_THRESHOLD):
-                gap_pct = round((avg_male - target["salary"]) / avg_male * 100, 1)
+            avg_male_norm = statistics.mean(
+                [_normalize_salary(m["salary"], m.get("location")) for m in comparable_males]
+            )
+            if target_norm < avg_male_norm * (1 - GENDER_GAP_THRESHOLD):
+                gap_pct = round((avg_male_norm - target_norm) / avg_male_norm * 100, 1)
+                # Comparison salary expressed in the target employee's local market.
+                comparison_local = round(avg_male_norm * target_mult)
                 categories.append({
                     "category": "gender_gap",
                     "label": "Gender Gap",
                     "employee_salary": target["salary"],
-                    "comparison_salary": round(avg_male),
-                    "comparison_entity": f"Avg of {len(comparable_males)} comparable male peer(s)",
+                    "comparison_salary": comparison_local,
+                    "comparison_entity": f"Avg of {len(comparable_males)} comparable male peer(s) (location-adjusted)",
                     "comparison_individuals": [_person_summary(m) for m in comparable_males],
                     "gap_percent": gap_pct,
                     "reason": (
                         f"Earns {gap_pct}% less than comparable male peers "
-                        f"in {target.get('role')} {target.get('level')} / {target.get('department')}"
+                        f"in {target.get('role')} {target.get('level')} / {target.get('department')} "
+                        f"(normalized to {target_loc or 'base'} cost-of-living)"
                     ),
                     "metadata": {
                         "peer_count": len(comparable_males),
                         "threshold_pct": GENDER_GAP_THRESHOLD * 100,
+                        "employee_location": target_loc,
+                        "employee_location_multiplier": target_mult,
+                        "employee_normalized_salary": round(target_norm),
+                        "peer_normalized_avg": round(avg_male_norm),
                     },
                 })
 
@@ -348,50 +404,64 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
     if (target.get("tenure_years") or 0) >= TENURE_VETERAN and new_hires:
         comparable_new = [n for n in new_hires if is_comparable(target, n)]
         if comparable_new:
-            avg_new = statistics.mean([n["salary"] for n in comparable_new])
-            if target["salary"] < avg_new * (1 - GAP_THRESHOLD):
-                gap_pct = round((avg_new - target["salary"]) / avg_new * 100, 1)
+            avg_new_norm = statistics.mean(
+                [_normalize_salary(n["salary"], n.get("location")) for n in comparable_new]
+            )
+            if target_norm < avg_new_norm * (1 - GAP_THRESHOLD):
+                gap_pct = round((avg_new_norm - target_norm) / avg_new_norm * 100, 1)
+                comparison_local = round(avg_new_norm * target_mult)
                 categories.append({
                     "category": "tenure_compression",
                     "label": "Tenure Compression",
                     "employee_salary": target["salary"],
-                    "comparison_salary": round(avg_new),
-                    "comparison_entity": f"Avg of {len(comparable_new)} new hire(s) (≤{TENURE_NEW}yr)",
+                    "comparison_salary": comparison_local,
+                    "comparison_entity": f"Avg of {len(comparable_new)} new hire(s) (≤{TENURE_NEW}yr, location-adjusted)",
                     "comparison_individuals": [_person_summary(n) for n in comparable_new],
                     "gap_percent": gap_pct,
                     "reason": (
                         f"Veteran ({target.get('tenure_years')}yr) earns {gap_pct}% less "
-                        f"than comparable new hires in same role"
+                        f"than comparable new hires in same role (location-normalized)"
                     ),
                     "metadata": {
                         "veteran_tenure": target.get("tenure_years"),
                         "peer_count": len(comparable_new),
                         "threshold_pct": GAP_THRESHOLD * 100,
+                        "employee_location": target_loc,
+                        "employee_location_multiplier": target_mult,
+                        "employee_normalized_salary": round(target_norm),
+                        "peer_normalized_avg": round(avg_new_norm),
                     },
                 })
 
     # ---- 3. Role Gap ----
     comparable_peers = [p for p in members if is_comparable(target, p)]
     if comparable_peers:
-        top_peer = max(comparable_peers, key=lambda p: p["salary"])
-        max_peer_salary = top_peer["salary"]
-        if target["salary"] < max_peer_salary * (1 - GAP_THRESHOLD):
-            gap_pct = round((max_peer_salary - target["salary"]) / max_peer_salary * 100, 1)
+        peer_norms = [(p, _normalize_salary(p["salary"], p.get("location"))) for p in comparable_peers]
+        top_peer, max_peer_norm = max(peer_norms, key=lambda x: x[1])
+        if target_norm < max_peer_norm * (1 - GAP_THRESHOLD):
+            gap_pct = round((max_peer_norm - target_norm) / max_peer_norm * 100, 1)
+            comparison_local = round(max_peer_norm * target_mult)
             categories.append({
                 "category": "role_gap",
                 "label": "Role Gap",
                 "employee_salary": target["salary"],
-                "comparison_salary": max_peer_salary,
-                "comparison_entity": f"Top earner in comparable peer group",
+                "comparison_salary": comparison_local,
+                "comparison_entity": f"Top earner in comparable peer group (location-adjusted)",
                 "comparison_individuals": [_person_summary(top_peer)],
                 "gap_percent": gap_pct,
                 "reason": (
                     f"Earns {gap_pct}% less than the highest-paid comparable peer "
-                    f"in {target.get('role')} {target.get('level')} / {target.get('department')}"
+                    f"in {target.get('role')} {target.get('level')} / {target.get('department')} "
+                    f"(location-normalized)"
                 ),
                 "metadata": {
                     "peer_count": len(comparable_peers),
                     "threshold_pct": GAP_THRESHOLD * 100,
+                    "employee_location": target_loc,
+                    "employee_location_multiplier": target_mult,
+                    "employee_normalized_salary": round(target_norm),
+                    "peer_normalized_max": round(max_peer_norm),
+                    "top_peer_location": top_peer.get("location"),
                 },
             })
 
@@ -399,24 +469,31 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
     if (target.get("performance_score") or 0) >= 4.0:
         comparable_low = [lp for lp in low_perf if is_comparable(target, lp)]
         if comparable_low:
-            avg_low = statistics.mean([lp["salary"] for lp in comparable_low])
-            if target["salary"] < avg_low:
-                gap_pct = round((avg_low - target["salary"]) / avg_low * 100, 1)
+            avg_low_norm = statistics.mean(
+                [_normalize_salary(lp["salary"], lp.get("location")) for lp in comparable_low]
+            )
+            if target_norm < avg_low_norm:
+                gap_pct = round((avg_low_norm - target_norm) / avg_low_norm * 100, 1)
+                comparison_local = round(avg_low_norm * target_mult)
                 categories.append({
                     "category": "performance_misalignment",
                     "label": "Performance Misalignment",
                     "employee_salary": target["salary"],
-                    "comparison_salary": round(avg_low),
-                    "comparison_entity": f"Avg of {len(comparable_low)} low performer(s) (score ≤3.0)",
+                    "comparison_salary": comparison_local,
+                    "comparison_entity": f"Avg of {len(comparable_low)} low performer(s) (score ≤3.0, location-adjusted)",
                     "comparison_individuals": [_person_summary(lp) for lp in comparable_low],
                     "gap_percent": gap_pct,
                     "reason": (
                         f"High performer (score {target.get('performance_score')}) earns {gap_pct}% "
-                        f"less than comparable low performers in same role"
+                        f"less than comparable low performers in same role (location-normalized)"
                     ),
                     "metadata": {
                         "employee_perf_score": target.get("performance_score"),
                         "peer_count": len(comparable_low),
+                        "employee_location": target_loc,
+                        "employee_location_multiplier": target_mult,
+                        "employee_normalized_salary": round(target_norm),
+                        "peer_normalized_avg": round(avg_low_norm),
                     },
                 })
 
@@ -430,6 +507,8 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
         "role": target.get("role"),
         "level": target.get("level"),
         "salary": target.get("salary"),
+        "location": target_loc,
+        "location_multiplier": target_mult,
         "gender": target.get("gender"),
         "tenure_years": target.get("tenure_years"),
         "performance_score": target.get("performance_score"),

@@ -194,6 +194,11 @@ export default function GapDetail() {
                 <div>
                   <p style={{ fontSize: '13px', color: isSelected ? '#cbd5e1' : '#475569', margin: 0 }}>{r.department}</p>
                   <p style={{ fontSize: '11px', color: isSelected ? '#64748b' : '#94a3b8', margin: 0 }}>{r.role} · L{r.level}</p>
+                  {r.location && (
+                    <p style={{ fontSize: '10px', color: isSelected ? '#94a3b8' : '#64748b', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                      <span>📍</span>{r.location}
+                    </p>
+                  )}
                 </div>
                 <div style={{ fontSize: '13px', fontWeight: '600', color: isSelected ? '#f1f5f9' : '#1e293b' }}>
                   ${r.salary?.toLocaleString()}
@@ -316,6 +321,7 @@ function ExpandedAnalysis({ employeeId, row, onClose }) {
           <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0' }}>
             Flagged in <strong style={{ color: '#ef4444' }}>{data.categories.length}</strong> categor{data.categories.length === 1 ? 'y' : 'ies'}
             {' · '}{data.department} · {data.role} · L{data.level}
+            {data.location && ` · 📍 ${data.location}`}
             {' · '}{data.tenure_years}yr tenure · perf {data.performance_score}
           </p>
         </div>
@@ -409,20 +415,21 @@ function InlineCategoryCard({ cat }) {
         {peers.length > 0 && (
           <div>
             <div style={{
-              display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '4px',
+              display: 'grid', gridTemplateColumns: '2fr 1.2fr 1fr 1fr 0.8fr', gap: '4px',
               fontSize: '10px', fontWeight: 600, color: '#94a3b8',
               textTransform: 'uppercase', letterSpacing: '0.4px',
               padding: '6px 8px', borderBottom: `1px solid ${c.accent}33`,
             }}>
-              <div>Peer</div><div>Salary</div><div>Tenure</div><div>Perf</div>
+              <div>Peer</div><div>Location</div><div>Salary</div><div>Tenure</div><div>Perf</div>
             </div>
             {peers.map(p => (
               <div key={p.employee_id} style={{
-                display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '4px',
+                display: 'grid', gridTemplateColumns: '2fr 1.2fr 1fr 1fr 0.8fr', gap: '4px',
                 fontSize: '11px', color: '#334155', padding: '5px 8px',
                 borderBottom: '1px solid #f1f5f9',
               }}>
                 <div style={{ fontWeight: 600 }}>{p.name}</div>
+                <div style={{ color: '#64748b' }}>📍 {p.location || '—'}</div>
                 <div>${p.salary?.toLocaleString()}</div>
                 <div>{p.tenure_years}yr</div>
                 <div>⭐ {p.performance_score}</div>
