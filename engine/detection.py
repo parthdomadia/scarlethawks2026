@@ -25,7 +25,7 @@ TENURE_VETERAN = 3.0
 TENURE_NEW = 2.0
 
 TENURE_TOLERANCE = 3        # years
-PERF_TOLERANCE = 1.0        # performance score difference
+PERF_TOLERANCE = 0.5        # performance score difference
 
 # Cost-of-living multipliers used by the data generator.
 # Base = Chicago (1.00). All gap math runs on location-normalized salaries
@@ -341,12 +341,13 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
     if len(members) < 2:
         return None
 
-    # --- precompute sub-groups ---
-    males   = [m for m in members if m.get("gender") == "M"]
-    females = [f for f in members if f.get("gender") == "F"]
-    veterans  = [v for v in members if (v.get("tenure_years") or 0) >= TENURE_VETERAN]
-    new_hires = [n for n in members if (n.get("tenure_years") or 0) <= TENURE_NEW]
-    low_perf  = [lp for lp in members if (lp.get("performance_score") or 0) <= 3.0]
+    # --- precompute sub-groups (excluding the target employee themselves) ---
+    others    = [e for e in members if e.get("employee_id") != target_id]
+    males     = [m for m in others if m.get("gender") == "M"]
+    females   = [f for f in others if f.get("gender") == "F"]
+    veterans  = [v for v in others if (v.get("tenure_years") or 0) >= TENURE_VETERAN]
+    new_hires = [n for n in others if (n.get("tenure_years") or 0) <= TENURE_NEW]
+    low_perf  = [lp for lp in others if (lp.get("performance_score") or 0) <= 3.0]
 
     categories = []
 
@@ -434,20 +435,22 @@ def get_comparison_details(target_id: str, employees: list[dict]) -> dict | None
                 })
 
     # ---- 3. Role Gap ----
-    comparable_peers = [p for p in members if is_comparable(target, p)]
+    comparable_peers = [p for p in members if is_comparable(target, p) and p.get("employee_id") != target_id]
     if comparable_peers:
         peer_norms = [(p, _normalize_salary(p["salary"], p.get("location"))) for p in comparable_peers]
         top_peer, max_peer_norm = max(peer_norms, key=lambda x: x[1])
         if target_norm < max_peer_norm * (1 - GAP_THRESHOLD):
             gap_pct = round((max_peer_norm - target_norm) / max_peer_norm * 100, 1)
             comparison_local = round(max_peer_norm * target_mult)
+            # Sort peers by salary desc so the top earner appears first
+            sorted_peers = sorted(comparable_peers, key=lambda p: p.get("salary") or 0, reverse=True)
             categories.append({
                 "category": "role_gap",
                 "label": "Role Gap",
                 "employee_salary": target["salary"],
                 "comparison_salary": comparison_local,
-                "comparison_entity": f"Top earner in comparable peer group (location-adjusted)",
-                "comparison_individuals": [_person_summary(top_peer)],
+                "comparison_entity": f"{len(sorted_peers)} comparable peer(s), top earner highlighted (location-adjusted)",
+                "comparison_individuals": [_person_summary(p) for p in sorted_peers],
                 "gap_percent": gap_pct,
                 "reason": (
                     f"Earns {gap_pct}% less than the highest-paid comparable peer "

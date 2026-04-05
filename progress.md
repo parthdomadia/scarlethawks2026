@@ -276,3 +276,85 @@ Click a row on `/gaps` → slide-in drawer shows **why** the employee was flagge
 3. `uvicorn app.main:app --reload --port 8001 --app-dir backend --reload-dir . --reload-dir ./engine`
 4. Hit `http://localhost:8001/api/gaps/{id}` with a flagged id from `/api/gaps`. Bogus id → 404.
 5. `cd frontend && npm run dev`, go to `/gaps`, click a row → drawer slides in from right. Esc / × / backdrop closes. Click another row → content swaps.
+
+---
+
+## Phase 4 — Inline Expand Panel, Cost Model, Location Normalization, Nav Cleanup (complete)
+
+Big chunk of UX, accuracy, and methodology upgrades across engine + frontend.
+
+### 1. Gap Analysis — inline expand-below panel (replaces side drawer)
+- **`frontend/src/pages/GapDetail.jsx`** — clicking a row now expands an animated panel **below** the row instead of opening a side drawer.
+  - Selected row paints dark with a blue left border, inverted flag badges, and a rotating `▾` chevron.
+  - Panel slides down via `@keyframes slideDown` (max-height + opacity animation).
+  - Quick-stats ribbon: salary, avg gap %, max gap %, peers compared.
+  - 2-column grid of category cards (1-col when only one flag). Each card has a gradient header stripe, side-by-side salary boxes (employee vs comparison — no progress bars), italic reason quote, and a full peer table (Peer / Location / Salary / Tenure / Perf).
+  - Peers are always shown (no toggle). Top earner first.
+  - Click same row to collapse; auto-scrolls into view on expand.
+- **Removed** `EmployeeDetailDrawer.jsx` import — now uses `useGapDetail` hook directly inside GapDetail.
+- **Location shown in 3 places**: row (under dept/role), expanded panel header, peer table column.
+
+### 2. Auto-persistence on click (no more manual script runs)
+- **`backend/app/routers/gaps.py`** — `GET /api/gaps/{employee_id}` now **auto-writes** comparison rows to Supabase `gap_comparisons` on every call. Dedupe: checks if `(employee_id, peer_id, category)` already exists before inserting. Each call generates a fresh `run_id` (uuid). No duplicates, no batch script needed.
+- Fixed a null-constraint bug where `run_id` was missing from the insert payload.
+- `scripts/generate_analysis.py` still works as a bulk-regeneration option (writes via `engine/persistence.save_analysis_run`), but day-to-day clicks handle persistence automatically.
+
+### 3. Data-driven cost model (replaces flat 35% placeholder)
+The old `fix_cost = salary × 5%` / `risk_cost = salary × 35%` were made-up. Replaced with industry-grounded formulas in **`engine/detection.py` → `compute_costs()`**:
+
+```
+fix_cost  = Σ (comparison_salary - employee_salary) across flagged categories
+risk_cost = replacement_cost + legal_exposure + disengagement_cost
+  replacement_cost   = salary × multiplier(level)   # L1-L3: 0.5, L4-L5: 1.0, L6+: 1.5
+  legal_exposure     = Σ (salary × gap_pct/100 × min(tenure, 3))  # EEOC 3yr cap
+  disengagement_cost = salary × 0.20 × flag_count
+```
+Sources: SHRM/Gallup (turnover 50–200% of salary), EEOC (back-pay cap 3 years), Gallup State of Workplace (20% productivity loss per disengaged employee).
+
+- **`backend/app/routers/gaps.py`** — both `/api/gaps` and `/api/gaps/{id}` now call `detection.compute_costs(salary, level, tenure_years, categories)` and attach `fix_cost`, `risk_cost`, `replacement_cost`, `legal_exposure`, `disengagement_cost` to each flagged employee.
+
+### 4. Location normalization (Option 2 — major correctness fix)
+**The bug**: peer grouping was `(department, role, level)` — location was not part of the key. A $130K L4 Engineer in SF (1.20× multiplier) was being compared directly against a $100K L4 Engineer in Austin (0.95×). The SF engineer looked overpaid; the Austin engineer looked underpaid — even though both were fair for their local market.
+
+**The fix**: all gap math now runs on **location-normalized** salaries. Peer groups stay large (no key change); raw salaries still display in the UI.
+
+- **`engine/detection.py`** — added `LOCATION_MULTIPLIERS` (SF 1.20, NYC 1.15, Seattle 1.10, Chicago 1.00 base, Austin 0.95) and `_normalize_salary(salary, location)` helper with unknown-location fallback + warning log.
+- `detect_flagged_employees` — all 4 gap checks (gender, tenure, role, performance) use normalized salaries. Raw salary + `location` still stored in output.
+- `get_comparison_details` — same normalization. Comparison salary is translated back to the target employee's local market (`avg_norm × target_multiplier`) so the UI shows coherent numbers (e.g. "you earn $95K, comparable peers at your location would earn $130K"). Metadata block exposes `employee_normalized_salary`, `peer_normalized_avg/max`, `employee_location_multiplier` for transparency.
+- **Role Gap** now returns **all** comparable peers (sorted by salary desc) instead of just the single top earner.
+- **Self-exclusion**: sub-groups (`males`, `females`, `veterans`, `new_hires`, `low_perf`) now exclude the target employee themselves so they don't show up as their own peer.
+- **Peer summary** includes `location` field.
+
+### 5. Threshold tuning
+During tuning, `GAP_THRESHOLD` and `TENURE_VETERAN` were adjusted (current values: `GAP_THRESHOLD = 0.15`, `GENDER_GAP_THRESHOLD = 0.23`, `TENURE_VETERAN = 3.0`, `PERF_TOLERANCE = 0.5`). These are live-editable in `engine/detection.py` constants.
+
+### 6. What-If Simulator
+New page at **`frontend/src/pages/Simulator.jsx`** — models how a remediation budget would move the equity score.
+- Budget slider ($0–$1M, step $5K) with 300ms debounce.
+- Department dropdown (demographic filter was prototyped but removed per request).
+- Before/after score gauges side-by-side with delta indicator.
+- Stats grid: employees affected, adjustments made, budget used, budget remaining.
+- Spend-by-category CSS bar chart.
+- Proposed adjustments table (top 10 preview, "Show all" toggle).
+- Backend: `POST /api/simulator` with `{budget, department}` body.
+
+### 7. Nav cleanup + fixed sidebar
+- **`frontend/src/components/layout/Sidebar.jsx`** — now `position: sticky`, `height: 100vh`, `alignSelf: flex-start`. Sidebar stays fixed while main content scrolls.
+- **Removed** "Compression" and "Employee View" nav items + routes + imports from `App.jsx`. Nav is now: Dashboard, Heatmap, Gap Analysis, Leaderboard, What-If.
+
+### Files touched
+- `engine/detection.py` — LOCATION_MULTIPLIERS, `_normalize_salary()`, `compute_costs()`, normalized gap math in both `detect_flagged_employees` and `get_comparison_details`, role-gap returns all peers, self-exclusion.
+- `backend/app/routers/gaps.py` — data-driven costs via `compute_costs`, auto-persistence with dedupe.
+- `backend/app/routers/simulator.py` — `POST /api/simulator` endpoint.
+- `frontend/src/pages/GapDetail.jsx` — inline expand panel, location display, removed drawer.
+- `frontend/src/pages/Simulator.jsx` — new What-If page.
+- `frontend/src/components/layout/Sidebar.jsx` — fixed positioning, trimmed nav.
+- `frontend/src/App.jsx` — removed Compression + EmployeeView routes/imports.
+
+### How to test
+1. Restart backend: `uvicorn app.main:app --reload --port 8001 --app-dir backend` (remember: `--reload` does NOT watch `engine/` by default — manual restart after engine edits).
+2. Hard-refresh `/gaps` — click any row, see expand-below panel with per-category cards, location, and full peer tables. SF/NYC employees who were previously over-flagged should drop off; Chicago/Austin employees previously missed may now appear.
+3. Check `/api/gaps/{id}` response metadata — should include `employee_normalized_salary`, `peer_normalized_avg`, `employee_location_multiplier`.
+4. `/simulator` — drag the slider, see gauges animate, adjustments table populate.
+5. Verify sidebar stays put while scrolling long pages.
+
