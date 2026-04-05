@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
+import logoDark from '../../assets/logo-dark.png'
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '📊' },
-  { to: '/heatmap', label: 'Equity Heatmap', icon: '🗺️' },
   { to: '/gaps', label: 'Gap Analysis', icon: '⚖️' },
-  { to: '/leaderboard', label: 'Leaderboard', icon: '🏆' },
   { to: '/simulator', label: 'What-If', icon: '🎛️' },
+  { to: '/ingest', label: 'Ingest Data', icon: '➕' },
+  { to: '/settings', label: 'Settings', icon: '⚙️' },
 ]
 
 export default function Sidebar() {
@@ -18,14 +19,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div style={{ padding: '20px 24px', borderBottom: '1px solid #1e293b' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: '700', fontSize: '13px',
-          }}>
-            PG
-          </div>
+          <img src={logoDark} alt="PayGap Radar" style={{ height: '80px', width: 'auto', display: 'block' }} />
           <div>
             <div style={{ fontSize: '15px', fontWeight: '600', letterSpacing: '-0.3px' }}>PayGap Radar</div>
             <div style={{ fontSize: '11px', color: '#64748b' }}>Pay Equity Intelligence</div>

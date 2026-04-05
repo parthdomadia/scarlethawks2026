@@ -18,8 +18,11 @@ def list_employees(
     order: str = "desc",
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
+    include_resolved: bool = False,
 ):
     q = supabase.table("employees").select("*", count="exact")
+    if not include_resolved:
+        q = q.eq("is_risky", True)
 
     if department:
         q = q.eq("department", department)

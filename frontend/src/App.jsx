@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Sidebar from './components/layout/Sidebar'
 import Dashboard from './pages/Dashboard'
-import Heatmap from './pages/Heatmap'
 import GapDetail from './pages/GapDetail'
-import Leaderboard from './pages/Leaderboard'
 import Simulator from './pages/Simulator'
+import Ingest from './pages/Ingest'
+import Settings from './pages/Settings'
 
 export default function App() {
   return (
@@ -14,10 +14,10 @@ export default function App() {
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#eef2f7' }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/heatmap" element={<Heatmap />} />
             <Route path="/gaps" element={<GapDetail />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/simulator" element={<Simulator />} />
+            <Route path="/ingest" element={<Ingest />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>
       </div>

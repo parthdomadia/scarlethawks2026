@@ -1,0 +1,21 @@
+first_name,last_name,gender,department,role,level,tenure_years,salary,performance_score,location,hire_date,age,education,is_manager
+Ada,Lovelace,F,Engineering,Software Engineer,L4,3.5,118000,4.3,Chicago,2022-09-01,32,Master,false
+Grace,Hopper,F,Engineering,Data Engineer,L5,6.0,148000,4.6,Seattle,2019-06-15,38,PhD,true
+Alan,Turing,M,Engineering,ML Engineer,L4,4.2,132000,4.4,San Francisco,2021-11-10,34,Master,false
+Katherine,Johnson,F,Finance,Financial Analyst,L3,5.1,88000,4.5,New York,2020-03-12,41,Bachelor,false
+Linus,Torvalds,M,Engineering,DevOps Engineer,L5,7.3,162000,4.7,Austin,2018-01-22,45,Bachelor,true
+Margaret,Hamilton,F,Engineering,QA Engineer,L3,2.8,82000,4.1,Seattle,2023-02-06,29,Bachelor,false
+Dennis,Ritchie,M,Engineering,Software Engineer,L6,9.5,195000,4.8,San Francisco,2016-07-18,48,PhD,true
+Radia,Perlman,F,Engineering,Data Engineer,L4,4.0,121000,4.2,New York,2022-01-15,36,Master,false
+Ken,Thompson,M,Engineering,ML Engineer,L5,6.8,158000,4.5,San Francisco,2019-04-03,44,Master,true
+Barbara,Liskov,F,Engineering,Software Engineer,L5,5.5,139000,4.4,Austin,2020-10-08,39,PhD,false
+James,Gosling,M,Engineering,DevOps Engineer,L4,3.9,125000,4.0,Seattle,2021-08-20,37,Bachelor,false
+Sofia,Kovalevskaya,F,Marketing,Marketing Analyst,L2,1.8,62000,3.9,Chicago,2024-01-30,27,Bachelor,false
+Marcus,Chen,M,Sales,Account Executive,L3,3.2,95000,4.2,New York,2022-06-10,33,Bachelor,false
+Priya,Patel,F,Sales,Sales Rep,L1,0.9,52000,3.7,Austin,2024-08-15,25,Associate,false
+Diego,Ramirez,M,Support,Support Agent,L1,1.2,48000,3.8,Chicago,2024-05-20,24,Associate,false
+Yuki,Tanaka,F,Finance,Accountant,L2,2.4,68000,4.0,Seattle,2023-06-01,28,Bachelor,false
+Oliver,Bennett,M,Marketing,Campaign Manager,L4,4.6,108000,4.3,San Francisco,2021-03-15,35,Master,true
+Amara,Okafor,F,Sales,Sales Manager,L5,6.2,145000,4.6,New York,2019-09-25,42,Master,true
+Ethan,Walsh,NB,Support,Success Manager,L3,2.9,78000,4.1,Austin,2023-01-18,30,Bachelor,false
+Isabella,Rossi,F,Finance,FP&A Manager,L5,7.1,152000,4.5,Chicago,2018-11-05,43,Master,true

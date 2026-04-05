@@ -16,6 +16,7 @@ def _fetch_all_employees():
         res = (
             supabase.table("employees")
             .select("*")
+            .eq("is_risky", True)
             .range(page * size, (page + 1) * size - 1)
             .execute()
         )

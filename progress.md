@@ -358,3 +358,55 @@ New page at **`frontend/src/pages/Simulator.jsx`** — models how a remediation 
 4. `/simulator` — drag the slider, see gauges animate, adjustments table populate.
 5. Verify sidebar stays put while scrolling long pages.
 
+---
+
+## Phase 5 — Ingest Data + Dashboard Polish (complete)
+
+HR can now add new hires (single form or CSV bulk) from the running app, then explicitly click Re-analyze to refresh gap comparisons. Dashboard got a round of demo-polish.
+
+### 1. Ingest pipeline
+New first-class ingestion path so HR can onboard one employee or a whole acquisition batch without re-running the seeder.
+
+- **`backend/app/routers/ingest.py`** (new) — three endpoints, mounted under `/api`:
+  - `POST /api/ingest/employee` — single employee. Pydantic-validated body with all 14 required business fields. Auto-assigns next `employee_id` (parses trailing digits of max id → `E####`). Sets `is_risky=True` so the new hire immediately participates in detection/scoring/simulator on the next request.
+  - `POST /api/ingest/bulk` — CSV upload via `multipart/form-data`. Parsed with stdlib `csv.DictReader` (no new deps). Validates every row first, then inserts in 100-row batches — if any row fails, zero rows are written and the response is `400 {row_number, message}`. Returns `{inserted, first_id, last_id}`.
+  - `POST /api/ingest/reanalyze` — thin wrapper around `persistence.save_analysis_run()` on the current active employee pool. Idempotent, explicit, user-triggered (no auto-refresh on insert per product decision).
+  - Shared helpers: `_validate_row()` enforces required fields + allowed values for gender/level/location/department/education, coerces numerics, parses booleans. `_next_employee_id()` queries `SELECT employee_id ORDER BY DESC LIMIT 1`, falls back to `E0001`. `_increment_id()` bumps the trailing integer.
+- **`backend/app/main.py`** — mounts the new `ingest` router.
+- **No engine changes.** Detection/scoring/persistence all operate on whatever list they get. Since new rows default to `is_risky=true`, they flow through every existing route automatically.
+- **`data/sample_employees_import.csv`** — 20-row reference file spanning all 5 departments, all 6 levels, all 5 locations, all 3 genders, mix of managers and ICs. Header row = REQUIRED_FIELDS.
+
+### 2. Ingest UI
+- **`frontend/src/pages/Ingest.jsx`** (new) — two-tab page (Add Employee / Bulk Upload) with a top-right **Re-analyze Now** button visible on both tabs.
+  - **Add Employee tab**: 14-field form (text inputs + selects for gender/department/level/location/education/is_manager). Client-side validation before submit. Success toast shows the new `employee_id`; form resets.
+  - **Bulk Upload tab**: file picker + "Download sample CSV" (generates the sample client-side from a constant, no static route needed). On file select, first 6 rows render as an inline preview table. Server validation errors surface inline with row number.
+  - **Re-analyze button**: POSTs to `/api/ingest/reanalyze`, shows spinner, toasts `Re-analyzed. {rows_written} gap rows written.` Only mechanism that refreshes `gap_comparisons` after ingest.
+- **`frontend/src/App.jsx`** — new `/ingest` route.
+- **`frontend/src/components/layout/Sidebar.jsx`** — `➕ Ingest Data` nav item between What-If and Settings.
+
+### 3. Dashboard polish (demo-hardening)
+Five high-impact refinements to `frontend/src/pages/Dashboard.jsx`:
+
+1. **Score count-up animation** — new `useCountUp` hook inside Dashboard.jsx. Animates 0 → target over 900ms with easeOutCubic. The SVG gauge arc animates in sync via `strokeDasharray`.
+2. **"Last analyzed" timestamp** — backend (`dashboard.py`) now returns `last_analyzed` (max `created_at` from `gap_comparisons`). Dashboard header shows `Last analyzed 2 mins ago · 1,002 employees scanned` with a live green dot.
+3. **StatCard progress bars fixed** — previously hard-coded to 60%. Now accept `pct` + `maxPct` and fill proportionally (gender/tenure/role scale against 25% max; performance alignment against 100%). Minimum 4% fill so tiny values remain visible.
+4. **Gauge replaced with SVG arc** — retired the conic-gradient + offset-white-circle hack. Now a clean SVG semicircle with rounded stroke caps that animates smoothly from empty → value using `strokeDasharray`.
+5. **Critical gaps hero banner** — appears above the grid when `flagged_gaps ≥ 20`. Red→orange gradient card with fix cost + risk cost, clickable to `/gaps`, subtle slide-in on hover.
+
+Bonus freebies rolled in:
+- Department table now **sorted worst-first** (lowest score on top) — leads the demo eye to the drama.
+- `&#9888;` HTML entity replaced with an inline SVG `WarningIcon` component for consistent rendering across OSes.
+
+### Files touched
+- **New**: `backend/app/routers/ingest.py`, `frontend/src/pages/Ingest.jsx`, `data/sample_employees_import.csv`
+- **Modified**: `backend/app/main.py`, `backend/app/routers/dashboard.py` (added `last_analyzed`), `frontend/src/App.jsx`, `frontend/src/components/layout/Sidebar.jsx`, `frontend/src/pages/Dashboard.jsx`
+
+### How to test
+1. Restart backend: `uvicorn app.main:app --reload --port 8001 --app-dir backend`.
+2. `GET /api/health` → 200.
+3. From `/ingest` (single tab), add a clearly underpaid female L4 Engineer → expect toast with new `E####` id.
+4. Bulk upload `data/sample_employees_import.csv` → expect `Inserted 20 employees (E####–E####)`.
+5. Click **Re-analyze Now** → expect `rows_written > 0`.
+6. Navigate to `/` → `total_employees` has increased; score animates up from 0; "Last analyzed" shows seconds-ago.
+7. Navigate to `/gaps` → new hires appear in the flagged list if they're underpaid vs normalized peers.
+

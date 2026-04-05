@@ -1,8 +1,51 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDashboard } from '../hooks/useDashboard'
 
+// Count-up animation hook — animates from 0 to target over ~900ms with easing.
+function useCountUp(target, duration = 900) {
+  const [val, setVal] = useState(0)
+  useEffect(() => {
+    if (target == null) return
+    let raf
+    const start = performance.now()
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration)
+      const eased = 1 - Math.pow(1 - t, 3) // easeOutCubic
+      setVal(target * eased)
+      if (t < 1) raf = requestAnimationFrame(tick)
+      else setVal(target)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, duration])
+  return val
+}
+
+function formatRelative(iso) {
+  if (!iso) return 'Never analyzed'
+  const then = new Date(iso).getTime()
+  const now = Date.now()
+  const secs = Math.max(0, Math.round((now - then) / 1000))
+  if (secs < 60) return `Last analyzed ${secs}s ago`
+  const mins = Math.round(secs / 60)
+  if (mins < 60) return `Last analyzed ${mins} min${mins === 1 ? '' : 's'} ago`
+  const hrs = Math.round(mins / 60)
+  if (hrs < 24) return `Last analyzed ${hrs} hr${hrs === 1 ? '' : 's'} ago`
+  const days = Math.round(hrs / 24)
+  return `Last analyzed ${days} day${days === 1 ? '' : 's'} ago`
+}
+
+const WarningIcon = ({ size = 16, color = '#ef4444' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+    <path d="M12 2L1 21h22L12 2zm0 6l7.5 13h-15L12 8zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z"
+      fill={color} />
+  </svg>
+)
+
 export default function Dashboard() {
   const { data, loading, error } = useDashboard()
+  const animatedScore = useCountUp(data?.company_score ?? 0)
 
   if (loading) return <div style={{ padding: '40px', color: '#64748b' }}>Loading dashboard...</div>
   if (error) return <div style={{ padding: '40px', color: '#ef4444' }}>Error: {error}</div>
@@ -11,16 +54,63 @@ export default function Dashboard() {
   const avgSalary = Math.round(totalPayroll / data.employees.length)
   const locationCount = [...new Set(data.employees.map(e => e.location))].length
   const scoreColor = data.company_score >= 70 ? '#10b981' : data.company_score >= 50 ? '#eab308' : '#ef4444'
+  const scoreDisplay = Math.round(animatedScore)
+  const arcDeg = animatedScore * 1.8
+
+  const showCritical = data.flagged_gaps >= 20
+  const pctAffected = (data.flagged_gaps / data.total_employees) * 100
+
+  // Sort departments worst-first for demo impact
+  const sortedDepts = [...data.department_scores].sort((a, b) => a.score - b.score)
 
   return (
     <div style={{ padding: '32px', fontFamily: 'Inter, system-ui, sans-serif', overflowY: 'auto', flex: 1 }}>
       {/* Header */}
-      <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#1e293b', margin: 0 }}>Company Overview</h1>
-        <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>
-          {data.total_employees} employees across {data.department_scores.length} departments
-        </p>
+      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#1e293b', margin: 0 }}>Company Overview</h1>
+          <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>
+            {data.total_employees} employees across {data.department_scores.length} departments
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#64748b' }}>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
+          {formatRelative(data.last_analyzed)} · {data.total_employees.toLocaleString()} employees scanned
+        </div>
       </div>
+
+      {/* Critical gaps hero banner */}
+      {showCritical && (
+        <Link to="/gaps" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <div style={{
+            marginBottom: '20px', padding: '16px 20px', borderRadius: '12px',
+            background: 'linear-gradient(90deg, #fef2f2 0%, #fff7ed 100%)',
+            border: '1px solid #fecaca', display: 'flex', alignItems: 'center', gap: '14px',
+            cursor: 'pointer', transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.12)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.boxShadow = 'none' }}
+          >
+            <div style={{
+              width: '40px', height: '40px', borderRadius: '10px', background: '#fef2f2',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              border: '1px solid #fecaca',
+            }}>
+              <WarningIcon size={20} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: '#991b1b' }}>
+                {data.flagged_gaps} employees are currently underpaid by more than 10%
+              </div>
+              <div style={{ fontSize: '12px', color: '#7f1d1d', marginTop: '2px' }}>
+                Estimated fix cost <strong>${data.estimated_fix_cost.toLocaleString()}</strong> ·
+                {' '}Risk of inaction <strong>${data.estimated_risk_cost.toLocaleString()}</strong>
+              </div>
+            </div>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#991b1b' }}>Review →</span>
+          </div>
+        </Link>
+      )}
 
       {/* Top row: Score + 4 cards */}
       <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', marginBottom: '20px' }}>
@@ -32,20 +122,25 @@ export default function Dashboard() {
           <p style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '500', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Equity Score
           </p>
-          {/* Circular gauge */}
-          <div style={{ position: 'relative', width: '160px', height: '80px', margin: '0 auto 12px', overflow: 'hidden' }}>
-            <div style={{
-              width: '160px', height: '160px', borderRadius: '50%',
-              background: `conic-gradient(${scoreColor} 0deg, ${scoreColor} ${data.company_score * 1.8}deg, #e2e8f0 ${data.company_score * 1.8}deg, #e2e8f0 180deg, transparent 180deg)`,
-              position: 'absolute', top: 0
-            }} />
-            <div style={{
-              width: '120px', height: '120px', borderRadius: '50%', background: 'white',
-              position: 'absolute', top: '20px', left: '20px'
-            }} />
+          {/* SVG semicircle gauge */}
+          <div style={{ width: '180px', height: '100px', margin: '0 auto 8px', position: 'relative' }}>
+            <svg width="180" height="100" viewBox="0 0 180 100">
+              {/* Track */}
+              <path d="M 15 90 A 75 75 0 0 1 165 90" stroke="#e2e8f0" strokeWidth="14" fill="none" strokeLinecap="round" />
+              {/* Value arc */}
+              <path
+                d="M 15 90 A 75 75 0 0 1 165 90"
+                stroke={scoreColor}
+                strokeWidth="14"
+                fill="none"
+                strokeLinecap="round"
+                strokeDasharray={`${(arcDeg / 180) * 235.6} 235.6`}
+                style={{ transition: 'stroke 0.3s ease' }}
+              />
+            </svg>
           </div>
           <div style={{ fontSize: '48px', fontWeight: '800', color: '#1e293b', lineHeight: 1 }}>
-            {data.company_score}
+            {scoreDisplay}
           </div>
           <span style={{
             display: 'inline-block', marginTop: '8px', padding: '3px 12px', borderRadius: '20px',
@@ -59,10 +154,10 @@ export default function Dashboard() {
 
         {/* 4 Summary Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-          <StatCard label="Gender Pay Gap" value={`${data.summary.gender_gap_pct.toFixed(1)}%`} desc="Avg gap between male & female in same roles" color="#ef4444" bg="#fef2f2" />
-          <StatCard label="Tenure Gap" value={`${data.summary.tenure_gap_pct.toFixed(1)}%`} desc="New hires earn more than loyal employees" color="#f97316" bg="#fff7ed" />
-          <StatCard label="Role Level Gap" value={`${data.summary.role_gap_pct.toFixed(1)}%`} desc="Pay variance within same role and level" color="#eab308" bg="#fefce8" />
-          <StatCard label="Performance Alignment" value={`${data.summary.performance_alignment_pct.toFixed(1)}%`} desc="Higher performers earning more" color="#10b981" bg="#ecfdf5" />
+          <StatCard label="Gender Pay Gap" value={`${data.summary.gender_gap_pct.toFixed(1)}%`} pct={data.summary.gender_gap_pct} maxPct={25} desc="Avg gap between male & female in same roles" color="#ef4444" />
+          <StatCard label="Tenure Gap" value={`${data.summary.tenure_gap_pct.toFixed(1)}%`} pct={data.summary.tenure_gap_pct} maxPct={25} desc="New hires earn more than loyal employees" color="#f97316" />
+          <StatCard label="Role Level Gap" value={`${data.summary.role_gap_pct.toFixed(1)}%`} pct={data.summary.role_gap_pct} maxPct={25} desc="Pay variance within same role and level" color="#eab308" />
+          <StatCard label="Performance Alignment" value={`${data.summary.performance_alignment_pct.toFixed(1)}%`} pct={data.summary.performance_alignment_pct} maxPct={100} desc="Higher performers earning more" color="#10b981" />
         </div>
       </div>
 
@@ -76,7 +171,7 @@ export default function Dashboard() {
           onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-            <span style={{ fontSize: '16px' }}>&#9888;</span>
+            <WarningIcon size={16} />
             <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748b' }}>Flagged Pay Gaps</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -86,14 +181,14 @@ export default function Dashboard() {
             </div>
             <div style={{ textAlign: 'right' }}>
               <p style={{ fontSize: '14px', fontWeight: '600', color: '#64748b' }}>{data.total_employees} total</p>
-              <p style={{ fontSize: '12px', color: '#94a3b8' }}>{((data.flagged_gaps / data.total_employees) * 100).toFixed(1)}% affected</p>
+              <p style={{ fontSize: '12px', color: '#94a3b8' }}>{pctAffected.toFixed(1)}% affected</p>
             </div>
           </div>
           {/* Progress bar */}
           <div style={{ marginTop: '14px', height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{
               height: '100%', borderRadius: '4px',
-              width: `${(data.flagged_gaps / data.total_employees) * 100}%`,
+              width: `${pctAffected}%`,
               background: 'linear-gradient(90deg, #ef4444, #f97316)',
               transition: 'width 1s ease-out'
             }} />
@@ -140,7 +235,7 @@ export default function Dashboard() {
         <div style={{ padding: '16px 22px', borderBottom: '1px solid #f1f5f9' }}>
           <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#475569', margin: 0 }}>Department Equity Scores</h3>
         </div>
-        {data.department_scores.map(dept => (
+        {sortedDepts.map(dept => (
           <div key={dept.name} style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             padding: '14px 22px', borderBottom: '1px solid #f8fafc', cursor: 'pointer',
@@ -208,7 +303,8 @@ export default function Dashboard() {
   )
 }
 
-function StatCard({ label, value, desc, color, bg }) {
+function StatCard({ label, value, desc, color, pct = 0, maxPct = 100 }) {
+  const fillPct = Math.max(4, Math.min(100, (pct / maxPct) * 100))
   return (
     <div style={{
       background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0',
@@ -219,9 +315,9 @@ function StatCard({ label, value, desc, color, bg }) {
         <span style={{ fontSize: '30px', fontWeight: '800', color: '#1e293b' }}>{value}</span>
       </div>
       <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>{desc}</p>
-      {/* Color accent bar */}
-      <div style={{ marginTop: '10px', height: '3px', background: '#f1f5f9', borderRadius: '2px' }}>
-        <div style={{ height: '100%', background: color, borderRadius: '2px', width: '60%' }} />
+      {/* Color accent bar — scaled to metric */}
+      <div style={{ marginTop: '10px', height: '3px', background: '#f1f5f9', borderRadius: '2px', overflow: 'hidden' }}>
+        <div style={{ height: '100%', background: color, borderRadius: '2px', width: `${fillPct}%`, transition: 'width 1s ease-out' }} />
       </div>
     </div>
   )

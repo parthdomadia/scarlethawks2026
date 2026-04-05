@@ -14,6 +14,7 @@ def _fetch_all_employees():
         res = (
             supabase.table("employees")
             .select("*")
+            # .eq("is_risky", True)
             .range(page * size, (page + 1) * size - 1)
             .execute()
         )
@@ -56,5 +57,18 @@ def dashboard():
     report["estimated_risk_cost"] = risk_cost
     for d in report.get("department_scores", []):
         d["flagged"] = dept_flagged.get(d["name"], 0)
+
+    # Most recent analysis run (max created_at from gap_comparisons)
+    try:
+        last = (
+            supabase.table("gap_comparisons")
+            .select("created_at")
+            .order("created_at", desc=True)
+            .limit(1)
+            .execute()
+        )
+        report["last_analyzed"] = (last.data[0]["created_at"] if last.data else None)
+    except Exception:
+        report["last_analyzed"] = None
 
     return report
